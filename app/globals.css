@@ -1,0 +1,372 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0b0f;
+  --foreground: #f4f5f7;
+  /* Cards are dark-tinted "glass" — deliberately *darker* than the solid
+     weather field behind them, so white and secondary-white text keeps WCAG
+     AA contrast on any weather colour (and the panels read as glass on the
+     coloured field rather than washing into it). */
+  --surface: rgba(7, 13, 25, 0.34);
+  --surface-strong: rgba(7, 13, 25, 0.48);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --accent: #5ab0ff;
+  --weather-bg: #15539a;
+  --weather-top: #2f7ac9;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-border-subtle: var(--border-subtle);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  color-scheme: dark;
+  /* The current weather's gradient, injected by the hero. Falls back
+     to a daytime sky (never black) before the forecast resolves, so the very
+     first paint — and any iOS overscroll / notch zone — shows colour.
+     Using dynamic linear-gradient ensures overscroll areas blend cleanly. */
+  background-color: var(--weather-bg, #15539a);
+  background-image: linear-gradient(
+    180deg,
+    var(--weather-top, #2f7ac9) 0%,
+    var(--weather-bg, #15539a) 100%
+  );
+  height: 100%;
+  /* Enable native overscroll bounce on iOS/macOS Safari, as requested in
+     agent_context.md. The gradient background now handles overscroll areas. */
+  overscroll-behavior-y: auto;
+}
+
+body {
+  min-height: 100dvh;
+  /* Set both background-color (for Safari toolbar fallback) and gradient
+     background-image matching the html element. */
+  background-color: var(--weather-bg, #15539a);
+  background-image: linear-gradient(
+    180deg,
+    var(--weather-top, #2f7ac9) 0%,
+    var(--weather-bg, #15539a) 100%
+  );
+  color: var(--foreground);
+  font-feature-settings: "ss01" 1;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: auto;
+}
+
+/* Pull-to-refresh: the cloud bobs gently in place while data reloads,
+   and three little drops fall out from underneath it in sequence — a
+   weather-themed stand-in for a loading spinner. */
+@keyframes ptr-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+.animate-ptr-bob {
+  animation: ptr-bob 1s ease-in-out infinite;
+}
+
+@keyframes ptr-drop {
+  0% {
+    transform: translateY(-2px) scale(0.6);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(7px) scale(0.5);
+    opacity: 0;
+  }
+}
+.animate-ptr-drop {
+  animation: ptr-drop 1s ease-in infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ptr-bob,
+  .animate-ptr-drop {
+    animation: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-fade-up {
+    animation: none;
+  }
+}
+
+/* Ambient weather background: subtle, slow, never literal. */
+@keyframes ambient-breathe {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+.animate-ambient-breathe {
+  animation: ambient-breathe 7s ease-in-out infinite;
+}
+
+@keyframes ambient-drift {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(6%);
+  }
+}
+.animate-ambient-drift {
+  animation: ambient-drift 22s ease-in-out infinite;
+}
+
+@keyframes ambient-drift-slow {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-5%);
+  }
+}
+.animate-ambient-drift-slow {
+  animation: ambient-drift-slow 32s ease-in-out infinite;
+}
+
+.ambient-rain {
+  background-image: repeating-linear-gradient(
+    100deg,
+    transparent 0,
+    transparent 14px,
+    var(--foreground) 14px,
+    var(--foreground) 15px
+  );
+  background-size: 100% 60px;
+}
+@keyframes ambient-rain {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 240px;
+  }
+}
+.animate-ambient-rain {
+  animation: ambient-rain 1.4s linear infinite;
+}
+
+@keyframes ambient-flash {
+  0%,
+  92%,
+  100% {
+    opacity: 0;
+  }
+  93% {
+    opacity: 0.05;
+  }
+  94% {
+    opacity: 0;
+  }
+  95% {
+    opacity: 0.03;
+  }
+}
+.animate-ambient-flash {
+  animation: ambient-flash 9s ease-out infinite;
+}
+
+/* Signature isolines: the whole contour field drifts sideways very slowly,
+   so the "weather chart" reads as a living system rather than a static print. */
+@keyframes wave-line {
+  0%,
+  100% {
+    transform: translate(-16px, -6px) scale(0.99);
+  }
+  50% {
+    transform: translate(16px, 6px) scale(1.01);
+  }
+}
+@utility animate-wave-line {
+  animation: wave-line 16s ease-in-out infinite;
+}
+
+@keyframes ambient-gradient {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+.animate-ambient-gradient {
+  background-size: 100% 180%;
+  animation: ambient-gradient 20s ease-in-out infinite;
+}
+
+/* Staggered load animation delays */
+.animation-delay-75 {
+  animation-delay: 75ms;
+}
+.animation-delay-150 {
+  animation-delay: 150ms;
+}
+.animation-delay-225 {
+  animation-delay: 225ms;
+}
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+/* Hide scrollbars on horizontally-scrolling strips without losing native scroll/momentum. */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Radar timeline scrubber: a tall transparent hit area around a thin visual
+   track, so the draggable thumb is generously sized for a finger/thumb. */
+.radar-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 36px;
+  margin: 0;
+  background: transparent;
+  touch-action: none;
+  cursor: pointer;
+}
+
+.radar-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: transparent;
+}
+
+.radar-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.8),
+    0 1px 4px rgba(0, 0, 0, 0.35);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.radar-slider:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.8),
+    0 1px 6px rgba(0, 0, 0, 0.4),
+    0 0 0 6px rgba(255, 255, 255, 0.12);
+}
+
+.radar-slider::-moz-range-track {
+  height: 4px;
+  background: transparent;
+}
+
+.radar-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.8),
+    0 1px 4px rgba(0, 0, 0, 0.35);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.radar-slider:active::-moz-range-thumb {
+  transform: scale(1.15);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.8),
+    0 1px 6px rgba(0, 0, 0, 0.4),
+    0 0 0 6px rgba(255, 255, 255, 0.12);
+}
+
+/* MapLibre's default attribution control ships with a light background
+   regardless of map style — restyle to match the app's dark theme and keep
+   it clear of the iOS status bar / notch. */
+.maplibregl-ctrl-top-left {
+  top: max(0.5rem, env(safe-area-inset-top));
+  left: 0.5rem;
+}
+
+.maplibregl-ctrl-attrib {
+  background: rgba(19, 21, 28, 0.75);
+  border-radius: 8px;
+  padding: 1px 6px;
+}
+
+.maplibregl-ctrl-attrib a {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.maplibregl-ctrl-attrib.maplibregl-compact {
+  background-color: rgba(19, 21, 28, 0.75);
+}
+
+.maplibregl-ctrl-attrib-button {
+  filter: invert(1) grayscale(1) brightness(1.6);
+}
