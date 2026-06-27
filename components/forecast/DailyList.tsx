@@ -1,6 +1,7 @@
+"use client";
+
 import { WeatherIcon } from "@/components/icons/WeatherIcon";
 import type { DailyTextForecast } from "@/lib/chmi/text";
-import { temperatureRangeGradient } from "@/lib/condition-gradients";
 import { conditionFor } from "@/lib/weather-codes";
 
 type DailyPoint = {
@@ -10,13 +11,15 @@ type DailyPoint = {
   precipMm: number;
 };
 
-const DAY_LABEL = (iso: string) =>
-  new Date(iso).toLocaleDateString("cs-CZ", {
-    weekday: "short",
-    day: "numeric",
-    month: "numeric",
-    timeZone: "Europe/Prague",
-  });
+const getDayLabel = (iso: string) => {
+  const date = new Date(iso);
+  return date
+    .toLocaleDateString("cs-CZ", {
+      weekday: "short",
+      timeZone: "Europe/Prague",
+    })
+    .toUpperCase();
+};
 
 export function DailyList({
   numericDays,
@@ -25,6 +28,7 @@ export function DailyList({
   numericDays: DailyPoint[];
   qualitativeDays: DailyTextForecast[];
 }) {
+  // Let's filter qualitative days that aren't in numeric days, just like the old component did
   const numericDates = new Set(numericDays.map((d) => d.date));
   const formatter = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Prague",
@@ -37,88 +41,125 @@ export function DailyList({
     return !numericDates.has(date);
   });
 
+  // Calculate temp bounds for range bar rendering
   const allLows = numericDays.map((d) => d.lowC);
   const allHighs = numericDays.map((d) => d.highC);
-  const rangeMin = Math.min(...allLows);
-  const rangeMax = Math.max(...allHighs);
+  const rangeMin = allLows.length > 0 ? Math.min(...allLows) : 0;
+  const rangeMax = allHighs.length > 0 ? Math.max(...allHighs) : 30;
   const span = Math.max(1, rangeMax - rangeMin);
 
+  // We show 5 days in the main dashboard index
+  const displayedDays = numericDays.slice(0, 5);
+
   return (
-    <div className="rounded-2xl border border-border-subtle bg-surface">
-      <div className="px-4 pt-3.5 pb-1 text-xs font-medium uppercase tracking-wide text-white/60">
-        7denní výhled
+    <div className="bg-[#f4f3f0] text-[#16161a] pb-[52px]">
+      {/* Header */}
+      <div className="text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold mb-[2px] px-[26px]">
+        5-DAY INDEX
       </div>
-      {numericDays.map((d, i) => {
-        const condition = conditionFor(d.precipMm, 35);
-        const leftPct = ((d.lowC - rangeMin) / span) * 100;
-        const widthPct = ((d.highC - d.lowC) / span) * 100;
-        return (
-          <div
-            key={d.date}
-            className={`flex items-center gap-3 px-4 py-2.5 text-sm ${i > 0 ? "border-t border-border-subtle" : ""}`}
-          >
-            <span className="w-16 shrink-0 text-white/70">
-              {DAY_LABEL(d.date)}
-            </span>
-            <WeatherIcon
-              condition={condition}
-              size={18}
-              className="shrink-0 text-white/60"
-            />
-            {d.precipMm > 0.1 ? (
-              <span className="w-10 shrink-0 text-right text-[11px] text-accent/80 tabular-nums">
-                {d.precipMm.toFixed(0)}mm
+
+      {/* Rows */}
+      <div className="px-[26px]">
+        {displayedDays.map((d) => {
+          // Check for snow condition
+          const condition = conditionFor(d.precipMm, 35, d.lowC);
+          
+          // Estimate probability based on precip amount
+          let precipVal = 0;
+          if (d.precipMm > 0.1) {
+            precipVal = Math.min(100, Math.max(10, Math.round(d.precipMm * 15 + 20)));
+          }
+          const precipText = `${precipVal}%`;
+          const pColor = precipVal === 0 ? "#bdbbb4" : "oklch(0.55 0.17 256)";
+
+          // Calculate bar left & right percentage
+          const leftPct = ((d.lowC - rangeMin) / span) * 100;
+          const widthPct = ((d.highC - d.lowC) / span) * 100;
+          const barL = `${leftPct.toFixed(1)}%`;
+          const barR = `${(100 - (leftPct + widthPct)).toFixed(1)}%`;
+
+          return (
+            <div
+              key={d.date}
+              className="flex items-center py-[6px] border-t border-[#cfcdc6]"
+            >
+              {/* Day label */}
+              <span className="w-[40px] shrink-0 text-[13px] font-semibold tracking-[0.04em]">
+                {getDayLabel(d.date)}
               </span>
-            ) : (
-              <span className="w-10 shrink-0" />
-            )}
-            <span className="w-7 shrink-0 text-right text-white/60 tabular-nums">
-              {Math.round(d.lowC)}°
-            </span>
-            <div className="relative h-1 flex-1 rounded-full bg-white/8">
-              <div
-                className="absolute h-1 rounded-full"
-                style={{
-                  left: `${leftPct}%`,
-                  width: `${widthPct}%`,
-                  background: temperatureRangeGradient(
-                    (d.lowC - rangeMin) / span,
-                    (d.highC - rangeMin) / span,
-                  ),
-                }}
+
+              {/* Weather icon */}
+              <WeatherIcon
+                condition={condition}
+                size={26}
               />
+
+              {/* Precip% */}
+              <span
+                className="w-[42px] shrink-0 text-center text-[11px] font-bold"
+                style={{ color: pColor }}
+              >
+                {precipText}
+              </span>
+
+              {/* Spacer */}
+              <span className="flex-1" />
+
+              {/* Temp range bar */}
+              <span className="w-[54px] h-[3px] bg-[#e4e2db] rounded-[2px] relative mr-[12px] overflow-hidden shrink-0">
+                <span
+                  className="absolute top-0 bottom-0 bg-[#16161a] rounded-[2px]"
+                  style={{ left: barL, right: barR }}
+                />
+              </span>
+
+              {/* Low Temp */}
+              <span className="text-[13px] text-[#9a9a9f] w-[24px] text-right shrink-0">
+                {Math.round(d.lowC)}
+              </span>
+
+              {/* High Temp */}
+              <span className="text-[13px] font-semibold text-[#16161a] w-[24px] text-right shrink-0 ml-[4px]">
+                {Math.round(d.highC)}
+              </span>
             </div>
-            <span className="w-7 shrink-0 font-medium tabular-nums">
-              {Math.round(d.highC)}°
-            </span>
+          );
+        })}
+      </div>
+
+      {/* Tail Qualitative Days - for backup/additional context if desired */}
+      {tail.length > 0 && (
+        <div className="mt-4 px-[26px]">
+          <div className="text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold mb-[6px] border-t border-[#cfcdc6] pt-3">
+            VÝHLED
           </div>
-        );
-      })}
-      {tail.map((d, i) => (
-        <div
-          key={d.headline}
-          className={`flex flex-col gap-1 px-4 py-3 text-sm ${
-            i > 0 || numericDays.length > 0
-              ? "border-t border-border-subtle"
-              : ""
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-white/70">{DAY_LABEL(d.startTime)}</span>
-            <span className="text-[11px] uppercase tracking-wide text-white/55">
-              výhled
-            </span>
+          <div className="flex flex-col gap-3">
+            {tail.slice(0, 3).map((d) => (
+              <div
+                key={d.headline}
+                className="flex flex-col gap-1 border-t border-[#cfcdc6]/40 pt-2 first:border-0 first:pt-0"
+              >
+                <div className="flex items-center justify-between text-xs font-semibold">
+                  <span className="text-[#16161a]">
+                    {getDayLabel(d.startTime)}
+                  </span>
+                  <span className="text-[10px] text-[#9a9a9f] uppercase tracking-wider">
+                    slovní
+                  </span>
+                </div>
+                <span className="text-[12px] text-[#6b6b70] leading-relaxed">
+                  {[
+                    d.sections.find((s) => s.name === "textIntro")?.text,
+                    d.sections.find((s) => s.name === "textWeather")?.text,
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || d.headline}
+                </span>
+              </div>
+            ))}
           </div>
-          <span className="text-white/55">
-            {[
-              d.sections.find((s) => s.name === "textIntro")?.text,
-              d.sections.find((s) => s.name === "textWeather")?.text,
-            ]
-              .filter(Boolean)
-              .join(" ") || d.headline}
-          </span>
         </div>
-      ))}
+      )}
     </div>
   );
 }

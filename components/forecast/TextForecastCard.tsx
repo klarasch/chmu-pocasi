@@ -1,23 +1,22 @@
+"use client";
+
 import type { DailyTextForecast } from "@/lib/chmi/text";
 
-const DAY_NAMES = ["Dnes", "Zítra"];
-
 export function TextForecastCard({ day }: { day: DailyTextForecast }) {
-  const label = DAY_NAMES[day.dayOffset] ?? day.headline;
-  const intro = day.sections.find((s) => s.name === "textIntro");
-  const weather = day.sections.find((s) => s.name === "textWeather");
+  const intro = day.sections.find((s) => s.name === "textIntro")?.text;
+  const weather = day.sections.find((s) => s.name === "textWeather")?.text;
+
+  // Combine intro and weather details nicely
+  const summaryText = [intro, weather].filter(Boolean).join(" ");
 
   return (
-    <div className="p-4">
-      <div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-white/60">
-        {label}
+    <div className="mx-[26px] mt-[11px] p-[10px] pl-[15px] pr-[15px] bg-[#ecebe6] border-l-[3px] border-[#16161a] text-[#16161a]">
+      <div className="text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold mb-[4px]">
+        TODAY
       </div>
-      <div className="mb-1.5 font-medium">{intro?.text ?? day.headline}</div>
-      {weather && (
-        <p className="text-[13px] leading-relaxed text-white/60">
-          {weather.text}
-        </p>
-      )}
+      <div className="text-[13px] leading-[1.4] text-[#34343a] font-normal">
+        {summaryText || day.headline}
+      </div>
     </div>
   );
 }

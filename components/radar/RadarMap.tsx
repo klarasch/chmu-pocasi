@@ -28,7 +28,7 @@ export function RadarMap({
 
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: "https://tiles.openfreemap.org/styles/dark",
+      style: "https://tiles.openfreemap.org/styles/positron",
       center: [(bbox.west + bbox.east) / 2, (bbox.south + bbox.north) / 2],
       zoom: 6,
       attributionControl: false,

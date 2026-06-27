@@ -1,5 +1,7 @@
 # Internal Changelog
 
+- Redesigned the user interface to match the Swiss editorial "Flat poster" prototype using CSS-based Bauhaus icons, static hourly grids, and a liquid glass pill.
+- Updated Radar layout with OpenFreeMap Positron light style, paper timelines, and a CSS-animated radar sweep loading placeholder.
 - Enabled native iOS/macOS Safari overscroll scroll bounce via `overscroll-behavior-y: auto`.
 - Made background gradient animate dynamically with `animate-ambient-gradient` and custom keyframes.
 - Enhanced card fade-up animations with larger translateY, scale, and a premium ease-out bezier curve.

@@ -26,19 +26,22 @@ The app is structured as a standalone progressive web application with a floatin
 
 ## Dynamic Features
 
-### Tab Bar Weather Sync
-- The icon next to the "Předpověď" tab bar item dynamically updates to represent the current weather condition at your location (e.g. Sunny, Partly Cloudy, Cloudy, Rain, Storm).
-- The icon also adapts to day or night (showing a moon instead of a sun during night hours).
+### Swiss Bauhaus Graphics and Icons
+- Weather conditions are represented using oversized Bauhaus geometric marks cropping out of the frame.
+- The hero shape floats and drifts ambiently, casting three staggered ghost echoes behind it.
+- Key weather icons (sun, moon, clouds, rain, storm, snow, fog) are custom HTML/CSS elements built from pure geometric primitives.
+- Micro-animations animate raindrops, snow dots, fog bars, and lightning bolts in real-time.
 
-### Motion and Transitions
-- The background color gradient of the app is subtly animated, mimicking changes in light and atmosphere.
-- Meteorological isolines (isobars) drift across the screen, reflecting wind currents.
-- Cards on the forecast page load with a staggered, smooth, and modern fade-up animation.
+### Liquid Glass Navigation Pill
+- Toggling between Forecast and Radar uses a floating liquid glass control pill with transparent backing, a high-saturate blur backdrop filter, and custom CSS Forecast/Radar icons.
+
+### Radar Loading Animation
+- Loading radar data triggers an animated, conic-gradient radar sweep placeholder aligned with the paper theme.
 
 ## PWA Standalone Mode
 
 - The application is a fully installable Progressive Web App (PWA).
 - When installed to your Home Screen on iOS or Android, the app runs in full-screen standalone mode.
-- The status bar and navigation toolbar are fully translucent, showing the weather background gradient extending all the way behind them.
-- **Important (iOS cache)**: iOS heavily caches PWA manifest settings. If you still see solid color bars in standalone mode after this update, delete the PWA from your Home Screen and add it again to apply the new transparent status bar configuration.
+- The app layout uses a centered `450px` width on desktop and fills the screen on mobile.
+
 

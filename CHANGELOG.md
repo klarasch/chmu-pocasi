@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- **Swiss Bauhaus Redesign**: Redesigned the entire user interface to match a warm paper (`#f4f3f0`) Swiss editorial grid and minimalist ink typography, restricting layouts to a centered `450px` width on desktop.
+- **Bauhaus Weather Icons**: Replaced the SVG icons with custom CSS-based Bauhaus geometric shapes for 9 weather states (sun, moon, partly, partly-night, cloud, rain, storm, snow, fog), using CSS transform scaling.
+- **Bauhaus Hero Weather Graphics**: Custom `460x460px` drifting circles with staggered echoes, animated clouds, rain, snow, lightning, and fog overlays matching the weather condition.
+- **Hourly Helvetica Grid**: A clean 6-column static grid showing the next 6 hours of the forecast.
+- **Estimated Humidity & Wind Compass**: Formatted Czech compass directions (S, JZ, etc.) from degrees and estimated relative humidity from cloud cover and precipitation.
+- **Radar sweep placeholder animation**: Added a CSS-animated conic gradient radar sweep loader when fetching precipitation frames on the Radar page.
+- **Light Radar Map Theme**: Configured MapLibre GL maps to use the OpenFreeMap `positron` style for a consistent light-paper color palette.
 - Native overscroll and elastic scroll bounce enabled on iOS/macOS Safari (`overscroll-behavior-y: auto`).
 - Staggered entry animation delays for forecast page cards (`.animation-delay-75`, `.animation-delay-150`, `.animation-delay-225`, `.animation-delay-300`).
 - Dynamic background linear-gradient shifting animation (`.animate-ambient-gradient`).

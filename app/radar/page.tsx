@@ -44,7 +44,7 @@ export default function RadarPage() {
 
   if (error) {
     return (
-      <main className="flex h-dvh items-center justify-center p-6 text-center text-sm text-red-400">
+      <main className="flex h-dvh items-center justify-center p-6 text-center text-sm text-[#e0383f] bg-[#f4f3f0] font-sans">
         Radar se nepodařilo načíst: {error}
       </main>
     );
@@ -52,8 +52,8 @@ export default function RadarPage() {
 
   if (!data || data.frames.length === 0) {
     return (
-      <main className="flex h-dvh animate-fade-in items-center justify-center text-sm text-white/40">
-        Načítání radaru…
+      <main className="relative h-dvh animate-fade-in overflow-hidden">
+        <RadarPlaceholder city={location.lat === DEFAULT_LOCATION.lat ? "PRAHA" : "LOKACE"} />
       </main>
     );
   }
@@ -61,7 +61,7 @@ export default function RadarPage() {
   const current = data.frames[Math.min(index, data.frames.length - 1)];
 
   return (
-    <main className="relative h-dvh animate-fade-in overflow-hidden">
+    <main className="relative h-dvh animate-fade-in overflow-hidden bg-[#ecebe6]">
       <RadarMap
         bbox={data.bbox}
         tileUrl={current.tileUrl}
@@ -78,3 +78,47 @@ export default function RadarPage() {
     </main>
   );
 }
+
+function RadarPlaceholder({ city = "PRAHA" }: { city?: string }) {
+  const [updatedTime, setUpdatedTime] = useState("");
+  useEffect(() => {
+    const time = new Date().toLocaleTimeString("cs-CZ", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    setUpdatedTime(time);
+  }, []);
+
+  return (
+    <div className="relative w-full h-dvh overflow-hidden bg-[#ecebe6] font-sans text-[#16161a]">
+      {/* Radar sweep elements */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div className="absolute rounded-full border-[1.5px] border-[#d3d1c9]" style={{ width: "270px", height: "270px" }} />
+        <div className="absolute rounded-full border-[1.5px] border-[#d3d1c9]" style={{ width: "185px", height: "185px" }} />
+        <div className="absolute rounded-full border-[1.5px] border-[#d3d1c9]" style={{ width: "100px", height: "100px" }} />
+        
+        {/* Sweep cone */}
+        <div className="absolute rounded-full overflow-hidden animate-[fpSpin_4s_linear_infinite]" style={{ width: "270px", height: "270px" }}>
+          <div 
+            className="absolute left-1/2 top-0 w-1/2 h-1/2 animate-[fpSpin_4s_linear_infinite]" 
+            style={{ 
+              background: "conic-gradient(from 0deg, oklch(0.55 0.17 256 / 0.35), transparent 60%)",
+              transformOrigin: "left bottom"
+            }} 
+          />
+        </div>
+        
+        <div className="absolute left-[43%] top-[39%] w-10 h-10 rounded-full bg-[oklch(0.55 0.17 256/0.5)]" />
+        <div className="absolute w-2 h-2 rounded-full bg-[#16161a]" />
+      </div>
+
+      <div className="absolute top-[18px] left-[26px] text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold">
+        RADAR · {city.toUpperCase()}
+      </div>
+      <div className="absolute bottom-[104px] left-0 right-0 text-center text-[12px] text-[#6b6b70] font-normal">
+        Načítání srážkových dat… {updatedTime && `aktualizováno v ${updatedTime}`}
+      </div>
+    </div>
+  );
+}
+

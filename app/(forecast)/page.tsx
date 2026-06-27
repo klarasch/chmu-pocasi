@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { AlertBanner } from "@/components/forecast/AlertBanner";
-import { AmbientBackground } from "@/components/forecast/AmbientBackground";
 import { CurrentConditions } from "@/components/forecast/CurrentConditions";
 import { DailyList } from "@/components/forecast/DailyList";
 import { HourlyStrip } from "@/components/forecast/HourlyStrip";
@@ -16,8 +15,8 @@ import {
   type DailyTextForecast,
   getNationalTextForecast,
 } from "@/lib/chmi/text";
-import { weatherBase, weatherTop } from "@/lib/condition-gradients";
 import { conditionFor, isNightHour } from "@/lib/weather-codes";
+
 
 export const dynamic = "force-dynamic";
 
@@ -81,17 +80,11 @@ async function Hero({
     );
   }
 
-  const condition = conditionFor(current.precipMm, current.cloudCoverPct);
+  const condition = conditionFor(current.precipMm, current.cloudCoverPct, current.temperatureC);
   const isNight = isNightHour(current.time);
 
   return (
     <>
-      {/* Rendered outside the fade-up wrapper below: that wrapper animates
-          with a transform, and a transformed ancestor would turn this fixed,
-          full-viewport layer into one scoped to the hero's own box instead of
-          the whole screen — the visible seam under the hero. */}
-      <style>{`:root{--weather-bg:${weatherBase(condition, isNight)};--weather-top:${weatherTop(condition, isNight)}}`}</style>
-      <AmbientBackground condition={condition} isNight={isNight} />
       <div className="animate-fade-up">
         <CurrentConditions
           time={current.time}
@@ -99,6 +92,7 @@ async function Hero({
           precipMm={current.precipMm}
           cloudCoverPct={current.cloudCoverPct}
           windSpeedKmh={current.windSpeedKmh}
+          windDirDeg={current.windDirDeg}
           highC={today?.highC}
           lowC={today?.lowC}
         />

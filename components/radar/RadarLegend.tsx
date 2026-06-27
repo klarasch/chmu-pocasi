@@ -8,8 +8,8 @@ const STOPS = [
 
 export function RadarLegend() {
   return (
-    <div className="pointer-events-none absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-10 rounded-2xl border border-border-subtle bg-[#13151c]/95 px-3.5 py-3 text-xs text-white shadow-[0_8px_30px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-      <div className="mb-2 text-[11px] font-medium uppercase tracking-wide text-white/45">
+    <div className="pointer-events-none absolute right-3 top-[max(0.75rem,env(safe-area-inset-top))] z-10 rounded-2xl border border-[#cfcdc6] bg-[#ecebe6]/95 px-3.5 py-3 text-xs text-[#16161a] shadow-[0_10px_30px_-8px_rgba(0,0,0,0.15)] backdrop-blur-xl">
+      <div className="mb-2 text-[11px] font-bold uppercase tracking-wide text-[#6b6b70]">
         Intenzita srážek
       </div>
       <div className="flex flex-col gap-1.5">
@@ -19,7 +19,7 @@ export function RadarLegend() {
               className="h-2 w-2 rounded-full"
               style={{ background: s.color }}
             />
-            <span className="text-white/80">{s.label}</span>
+            <span className="text-[#16161a]/80 font-medium">{s.label}</span>
           </div>
         ))}
       </div>

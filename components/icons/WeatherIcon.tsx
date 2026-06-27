@@ -1,174 +1,153 @@
+"use client";
+
 import type { Condition } from "@/lib/weather-codes";
-
-const SUN_YELLOW = "#FACC15";
-const MOON_SILVER = "#CBD5E1";
-
-// A single fluffy cloud, scaled up so it carries the same visual weight as
-// the sun/moon glyphs instead of reading as a thin sliver underneath them.
-const CLOUD = (
-  <g fill="currentColor" stroke="none">
-    <circle cx="7.8" cy="15.6" r="4" />
-    <circle cx="13" cy="12.9" r="5.4" />
-    <circle cx="18.1" cy="15.8" r="3.5" />
-    <rect x="5.2" y="15.7" width="15.6" height="4.6" rx="2.3" />
-  </g>
-);
-
-// A second, lower-opacity puff peeking out behind the main cloud — used for
-// "cloudy" so a fully overcast sky reads denser than a single passing cloud.
-const CLOUD_BACK = (
-  <g fill="currentColor" stroke="none" opacity={0.45}>
-    <circle cx="15.5" cy="8.4" r="3.4" />
-    <rect x="12.6" y="8.5" width="7.6" height="3.4" rx="1.7" />
-  </g>
-);
-
-const SUN_RAYS = (
-  <path
-    d="M12 1.6v2.6M12 19.8v2.6M3.8 3.8l1.85 1.85M18.35 18.35l1.85 1.85M1.6 12h2.6M19.8 12h2.6M3.8 20.2l1.85-1.85M18.35 5.65l1.85-1.85"
-    stroke={SUN_YELLOW}
-    strokeWidth="1.7"
-    strokeLinecap="round"
-  />
-);
-
-const SUN_FULL = (
-  <>
-    {SUN_RAYS}
-    <circle cx="12" cy="12" r="4.6" fill={SUN_YELLOW} stroke="none" />
-  </>
-);
-
-// Single-path crescent: one outer arc plus one inner arc sharing both
-// endpoints, so the two arcs bound a single crescent region instead of
-// describing two overlapping circles.
-const MOON_FULL = (
-  <path
-    d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
-    fill={MOON_SILVER}
-    stroke="none"
-  />
-);
-
-const MOON_STARS = (
-  <g fill={MOON_SILVER} stroke="none">
-    <path d="M5.2 5.6a3 3 0 0 0 2.1 2.1 3 3 0 0 0-2.1 2.1 3 3 0 0 0-2.1-2.1 3 3 0 0 0 2.1-2.1Z" />
-  </g>
-);
-
-// Sun peeking from behind the cloud: only the upper rays are drawn (the
-// lower half is occluded by the cloud anyway), and the disc sits high and
-// slightly left so the cloud reads as passing in front of it, not beside it.
-const SUN_PEEK_RAYS = (
-  <path
-    d="M8 3v-2M10.83 4.17l1.55-1.55M5.17 4.17 3.62 2.62M12 7h2.2M4 7H1.8"
-    stroke={SUN_YELLOW}
-    strokeWidth="1.6"
-    strokeLinecap="round"
-  />
-);
-
-const SUN_PEEK = (
-  <>
-    {SUN_PEEK_RAYS}
-    <circle cx="8" cy="7" r="4" fill={SUN_YELLOW} stroke="none" />
-  </>
-);
-
-// Same crescent shape as MOON_FULL, scaled and shifted to sit in the same
-// top-left corner SUN_PEEK occupies.
-const MOON_PEEK = (
-  <g transform="translate(1.7,1.3) scale(0.46)">
-    <path
-      d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"
-      fill={MOON_SILVER}
-      stroke="none"
-    />
-  </g>
-);
-
-const RAIN_DROPS = (
-  <path
-    d="M9 20.5 8 23M13 20.5l-1 2.5M17 20.5l-1 2.5"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    strokeLinecap="round"
-  />
-);
-
-const BOLT = (
-  <path
-    d="M13.2 14.5 9.5 19.5h3l-1.5 4 4.5-5.5h-3l1.2-3.5Z"
-    fill="currentColor"
-    stroke="none"
-  />
-);
-
-function pathsFor(condition: Condition, isNight: boolean): React.ReactNode {
-  switch (condition) {
-    case "clear":
-      return isNight ? (
-        <>
-          {MOON_STARS}
-          {MOON_FULL}
-        </>
-      ) : (
-        SUN_FULL
-      );
-    case "partly-cloudy":
-      return (
-        <>
-          {isNight ? MOON_PEEK : SUN_PEEK}
-          {CLOUD}
-        </>
-      );
-    case "cloudy":
-      return (
-        <>
-          {CLOUD_BACK}
-          {CLOUD}
-        </>
-      );
-    case "rain":
-      return (
-        <>
-          {CLOUD_BACK}
-          {CLOUD}
-          {RAIN_DROPS}
-        </>
-      );
-    case "storm":
-      return (
-        <>
-          {CLOUD_BACK}
-          {CLOUD}
-          {BOLT}
-        </>
-      );
-  }
-}
 
 export function WeatherIcon({
   condition,
   isNight = false,
-  size = 22,
-  className,
+  size = 30,
+  className = "",
 }: {
   condition: Condition;
   isNight?: boolean;
   size?: number;
   className?: string;
 }) {
+  const scale = size / 30;
+
+  // Map our Condition types to Bauhaus icon types
+  let iconType: "sun" | "moon" | "partly" | "partly-night" | "cloud" | "rain" | "storm" | "snow" | "fog" = "sun";
+  if (condition === "clear") {
+    iconType = isNight ? "moon" : "sun";
+  } else if (condition === "partly-cloudy") {
+    iconType = isNight ? "partly-night" : "partly";
+  } else if (condition === "cloudy") {
+    iconType = "cloud";
+  } else if (condition === "rain") {
+    iconType = "rain";
+  } else if (condition === "storm") {
+    iconType = "storm";
+  } else if (condition === "snow") {
+    iconType = "snow";
+  } else if (condition === "fog") {
+    iconType = "fog";
+  }
+
   return (
-    // biome-ignore lint/a11y/noSvgWithoutTitle: purely decorative, condition is conveyed by adjacent text
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      className={className}
-      aria-hidden
+    <div
+      className={`relative select-none shrink-0 overflow-hidden ${className}`}
+      style={{
+        width: `${size}px`,
+        height: `${size}px`,
+      }}
+      aria-hidden="true"
     >
-      {pathsFor(condition, isNight)}
-    </svg>
+      <div
+        className="absolute top-0 left-0 origin-top-left"
+        style={{
+          width: "30px",
+          height: "30px",
+          transform: `scale(${scale})`,
+        }}
+      >
+        {/* CLEAR (day) - SUN */}
+        {iconType === "sun" && (
+          <div className="absolute left-[5px] top-[5px] w-5 h-5 rounded-full bg-[#f2c12e]" />
+        )}
+
+        {/* CLEAR (night) - MOON CRESCENT (using box-shadow to be transparent) */}
+        {iconType === "moon" && (
+          <div
+            className="absolute left-[10px] top-[2px] w-[18px] h-[18px] rounded-full"
+            style={{
+              boxShadow: "-6px 5px 0 0 #f2c12e",
+            }}
+          />
+        )}
+
+        {/* PARTLY (day) */}
+        {iconType === "partly" && (
+          <>
+            <div className="absolute right-[2px] top-[1px] w-[15px] h-[15px] rounded-full bg-[#f2c12e]" />
+            <div className="absolute left-[2px] bottom-[7px] w-10 h-10 rounded-full bg-[#c9c6bd] scale-25 origin-bottom-left" style={{ width: "10px", height: "10px" }} />
+            <div className="absolute right-[5px] bottom-[8px] w-9 h-9 rounded-full bg-[#c9c6bd] scale-25 origin-bottom-right" style={{ width: "9px", height: "9px" }} />
+            <div className="absolute left-[3px] bottom-[5px] w-6 h-[11px] rounded-[6px] bg-[#c9c6bd]" style={{ width: "24px" }} />
+          </>
+        )}
+
+        {/* PARTLY (night) */}
+        {iconType === "partly-night" && (
+          <>
+            <div
+              className="absolute right-[4px] top-[-1px] w-[12px] h-[12px] rounded-full"
+              style={{
+                boxShadow: "-3px 3px 0 0 #f2c12e",
+              }}
+            />
+            <div className="absolute left-[2px] bottom-[7px] w-[10px] h-[10px] rounded-full bg-[#c9c6bd]" />
+            <div className="absolute right-[5px] bottom-[8px] w-[9px] h-[9px] rounded-full bg-[#c9c6bd]" />
+            <div className="absolute left-[3px] bottom-[5px] w-[24px] h-[11px] rounded-[6px] bg-[#c9c6bd]" />
+          </>
+        )}
+
+        {/* CLOUDY */}
+        {iconType === "cloud" && (
+          <>
+            <div className="absolute left-[3px] top-[6px] w-[12px] h-[12px] rounded-full bg-[#a8a59c]" />
+            <div className="absolute right-[3px] top-[9px] w-[10px] h-[10px] rounded-full bg-[#a8a59c]" />
+            <div className="absolute left-[3px] bottom-[6px] w-[24px] h-[12px] rounded-[6px] bg-[#a8a59c]" />
+          </>
+        )}
+
+        {/* RAIN */}
+        {iconType === "rain" && (
+          <>
+            <div className="absolute left-[3px] top-[3px] w-[12px] h-[12px] rounded-full bg-[#9a978e]" />
+            <div className="absolute right-[3px] top-[6px] w-[10px] h-[10px] rounded-full bg-[#9a978e]" />
+            <div className="absolute left-[3px] top-[9px] w-[24px] h-[11px] rounded-[6px] bg-[#9a978e]" />
+            <div className="absolute left-[8px] bottom-0 w-[2px] h-[7px] rounded-[1px] bg-[#2b5fd9] animate-[wi-rain_1.1s_linear_infinite]" />
+            <div className="absolute left-[15px] bottom-0 w-[2px] h-[7px] rounded-[1px] bg-[#2b5fd9] animate-[wi-rain_1.1s_linear_0.35s_infinite]" />
+            <div className="absolute left-[21px] bottom-0 w-[2px] h-[7px] rounded-[1px] bg-[#2b5fd9] animate-[wi-rain_1.1s_linear_0.65s_infinite]" />
+          </>
+        )}
+
+        {/* THUNDERSTORM */}
+        {iconType === "storm" && (
+          <>
+            <div className="absolute left-[3px] top-[3px] w-[12px] h-[12px] rounded-full bg-[#7c7a72]" />
+            <div className="absolute right-[3px] top-[6px] w-[10px] h-[10px] rounded-full bg-[#7c7a72]" />
+            <div className="absolute left-[3px] top-[9px] w-[24px] h-[11px] rounded-[6px] bg-[#7c7a72]" />
+            <div
+              className="absolute left-[11px] bottom-[-1px] w-[11px] h-[14px] bg-[#f2c12e] animate-[wi-flash_2.4s_linear_infinite]"
+              style={{
+                clipPath: "polygon(52% 0, 18% 58%, 44% 58%, 28% 100%, 84% 36%, 54% 36%)",
+              }}
+            />
+          </>
+        )}
+
+        {/* SNOW */}
+        {iconType === "snow" && (
+          <>
+            <div className="absolute left-[3px] top-[3px] w-[12px] h-[12px] rounded-full bg-[#a8a59c]" />
+            <div className="absolute right-[3px] top-[6px] w-[10px] h-[10px] rounded-full bg-[#a8a59c]" />
+            <div className="absolute left-[3px] top-[9px] w-[24px] h-[11px] rounded-[6px] bg-[#a8a59c]" />
+            <div className="absolute left-[8px] bottom-[1px] w-[4px] h-[4px] rounded-full bg-[#9cc0ef] animate-[wi-snow_1.6s_linear_infinite]" />
+            <div className="absolute left-[14px] bottom-[-1px] w-[4px] h-[4px] rounded-full bg-[#9cc0ef] animate-[wi-snow_1.6s_linear_0.5s_infinite]" />
+            <div className="absolute left-[20px] bottom-[1px] w-[4px] h-[4px] rounded-full bg-[#9cc0ef] animate-[wi-snow_1.6s_linear_1s_infinite]" />
+          </>
+        )}
+
+        {/* FOG */}
+        {iconType === "fog" && (
+          <>
+            <div className="absolute left-[3px] top-[5px] w-[24px] h-[3px] rounded-[2px] bg-[#a8a59c]" />
+            <div className="absolute left-[6px] top-[12px] w-[21px] h-[3px] rounded-[2px] bg-[#bdbab1]" />
+            <div className="absolute left-[3px] top-[19px] w-[24px] h-[3px] rounded-[2px] bg-[#a8a59c]" />
+            <div className="absolute left-[7px] top-[26px] w-[16px] h-[3px] rounded-[2px] bg-[#bdbab1]" />
+          </>
+        )}
+      </div>
+    </div>
   );
 }

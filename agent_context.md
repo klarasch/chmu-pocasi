@@ -14,17 +14,16 @@ It retrieves Czech weather forecast data directly from the official ČHMÚ open 
 - **Zero CORS**: All external calls to ČHMÚ API are proxied via `/api/*` endpoints.
 
 ## Active Task Context
-- Fixed Safari status bar and navigation toolbar solid bar issue by applying a linear-gradient background on `html`/`body` using `--weather-top` and `--weather-bg` values.
-- Enabled native Safari rubber-band/overscroll bounce by setting `overscroll-behavior-y: auto` on `html`/`body` (with overscroll zones seamlessly colored by the background gradient).
-- Created a branded app icon featuring the signature isoline wave pattern and sun+cloud motif on the app's blue gradient sky. Generated icons at all required sizes (192, 512, 180, 32) and wired them into the PWA manifest and Next.js metadata.
-- Implemented client-side weather state manager (`lib/weather-state.ts`) to coordinate forecast weather conditions with the tab bar navigation in client space.
-- Configured dynamic background animations (gradient shifting, improved isoline wave drift) and staggered fade-up card appearance animations on the forecast page.
-- Suppressed Node.js `DEP0005` deprecation warnings (`Buffer()`) triggered by third-party packages (like `seek-bzip` used in GRIB2 decompression) by intercepting `process.emitWarning` in `instrumentation.ts`.
+- Redesigned the entire application frontend to match the Swiss editorial, Bauhaus-inspired "Flat poster" design language (warm paper `#f4f3f0` background, ink `#16161a` text, and Swiss typography).
+- Switched the MapLibre GL radar map to OpenFreeMap's light `positron` style, keeping the entire application visual palette unified.
+- Recreated `WeatherIcon` to draw CSS-based Bauhaus geometric shapes (sun, moon, partly, partly-night, cloud, rain, storm, snow, fog) and scaled them dynamically using CSS transforms.
+- Built a hero weather graphic in `CurrentConditions.tsx` featuring `460x460px` crop-out circles with staggered floating animations, a prominent degree indicator (`116pt`), and ambient weather elements (rain, snow, lightning, fog).
+- Added dynamic server/client integration by passing wind degrees (compass conversion for Sever, Jih, etc.) and estimating relative humidity from cloud cover and precipitation.
+- Replaced the horizontal scrolling hourly row with a static 6-column Helvetica grid.
+- Redesigned the 5-day daily forecast index with horizontal range bar indicators and customized alignment offsets.
+- Recreated the bottom floating navigation tab pill as a liquid glass control with custom CSS-based Forecast and Radar icons.
+- Implemented a CSS-animated radar sweep screen as the loading placeholder for the Radar page.
+- Removed obsolete ambient gradient backgrounds and color syncing files (`lib/condition-gradients.ts` and `components/forecast/AmbientBackground.tsx`).
 
-## App Icon
-- Design: Liquid iOS 18-style — small glowing sun, subtle organic isoline waves, and a tiny star on a skeuomorphic blue gradient sky.
-- Assets: `public/icons/icon-192.png`, `public/icons/icon-512.png`, `public/icons/apple-touch-icon.png`, `app/favicon.ico`.
-- Replaced all icon assets using the user-uploaded customized source image `media__1782243498163.png`.
-- Referenced from `manifest.webmanifest` and `app/layout.tsx` metadata.
 
 

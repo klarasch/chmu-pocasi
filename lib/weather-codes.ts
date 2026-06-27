@@ -1,9 +1,20 @@
-export type Condition = "clear" | "partly-cloudy" | "cloudy" | "rain" | "storm";
+export type Condition =
+  | "clear"
+  | "partly-cloudy"
+  | "cloudy"
+  | "rain"
+  | "storm"
+  | "snow"
+  | "fog";
 
 export function conditionFor(
   precipMm: number,
   cloudCoverPct: number,
+  temperatureC?: number,
 ): Condition {
+  if (precipMm > 0.1 && temperatureC !== undefined && temperatureC <= 1) {
+    return "snow";
+  }
   if (precipMm >= 4) return "storm";
   if (precipMm > 0.1) return "rain";
   if (cloudCoverPct >= 80) return "cloudy";
@@ -25,6 +36,8 @@ export const CONDITION_ICON: Record<Condition, string> = {
   cloudy: "☁️",
   rain: "🌧️",
   storm: "⛈️",
+  snow: "❄️",
+  fog: "🌫️",
 };
 
 export const CONDITION_LABEL: Record<Condition, string> = {
@@ -33,4 +46,7 @@ export const CONDITION_LABEL: Record<Condition, string> = {
   cloudy: "Zataženo",
   rain: "Déšť",
   storm: "Bouřky",
+  snow: "Sněžení",
+  fog: "Mlha",
 };
+

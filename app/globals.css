@@ -1,18 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0b0f;
-  --foreground: #f4f5f7;
-  /* Cards are dark-tinted "glass" — deliberately *darker* than the solid
-     weather field behind them, so white and secondary-white text keeps WCAG
-     AA contrast on any weather colour (and the panels read as glass on the
-     coloured field rather than washing into it). */
-  --surface: rgba(7, 13, 25, 0.34);
-  --surface-strong: rgba(7, 13, 25, 0.48);
-  --border-subtle: rgba(255, 255, 255, 0.1);
-  --accent: #5ab0ff;
-  --weather-bg: #15539a;
-  --weather-top: #2f7ac9;
+  --background: #f4f3f0;
+  --foreground: #16161a;
+  --surface: #ecebe6;
+  --surface-strong: #e4e2db;
+  --border-subtle: #cfcdc6;
+  --accent: oklch(0.55 0.17 256);
+  --weather-bg: #f4f3f0;
 }
 
 @theme inline {
@@ -27,38 +22,27 @@
 }
 
 html {
-  color-scheme: dark;
-  /* The current weather's gradient, injected by the hero. Falls back
-     to a daytime sky (never black) before the forecast resolves, so the very
-     first paint — and any iOS overscroll / notch zone — shows colour.
-     Using dynamic linear-gradient ensures overscroll areas blend cleanly. */
-  background-color: var(--weather-bg, #15539a);
-  background-image: linear-gradient(
-    180deg,
-    var(--weather-top, #2f7ac9) 0%,
-    var(--weather-bg, #15539a) 100%
-  );
+  color-scheme: light;
+  background-color: #e5e3dd; /* Warm gray surrounding page background for desktop frame */
   height: 100%;
-  /* Enable native overscroll bounce on iOS/macOS Safari, as requested in
-     agent_context.md. The gradient background now handles overscroll areas. */
   overscroll-behavior-y: auto;
 }
 
 body {
   min-height: 100dvh;
-  /* Set both background-color (for Safari toolbar fallback) and gradient
-     background-image matching the html element. */
-  background-color: var(--weather-bg, #15539a);
-  background-image: linear-gradient(
-    180deg,
-    var(--weather-top, #2f7ac9) 0%,
-    var(--weather-bg, #15539a) 100%
-  );
-  color: var(--foreground);
+  max-width: 450px;
+  margin: 0 auto;
+  background-color: #f4f3f0;
+  color: #16161a;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.06);
+  border-left: 1px solid #cfcdc6;
+  border-right: 1px solid #cfcdc6;
   font-feature-settings: "ss01" 1;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: auto;
+  position: relative;
 }
+
 
 /* Pull-to-refresh: the cloud bobs gently in place while data reloads,
    and three little drops fall out from underneath it in sequence — a
@@ -138,6 +122,17 @@ body {
     animation: none;
   }
 }
+
+@keyframes fpFloatA { 0%,100%{ transform:translate(0,0) } 50%{ transform:translate(-15px,19px) } }
+@keyframes fpFloatB { 0%,100%{ transform:translate(0,0) } 50%{ transform:translate(12px,-12px) } }
+@keyframes fpSpin   { from{ transform:rotate(0deg) } to{ transform:rotate(360deg) } }
+@keyframes fpRain   { 0%{ transform:translateY(-4px);opacity:0 } 25%{ opacity:1 } 100%{ transform:translateY(14px);opacity:0 } }
+@keyframes fpSnow   { 0%{ transform:translateY(-4px) rotate(0deg);opacity:0 } 30%{ opacity:1 } 100%{ transform:translateY(14px) rotate(180deg);opacity:0 } }
+@keyframes fpFlash  { 0%,88%,100%{ opacity:1 } 90%{ opacity:.1 } 93%{ opacity:1 } }
+@keyframes wi-rain  { 0%{ transform:translateY(-3px); opacity:0 } 25%{ opacity:1 } 100%{ transform:translateY(7px); opacity:0 } }
+@keyframes wi-snow  { 0%{ transform:translateY(-3px); opacity:0 } 25%{ opacity:1 } 100%{ transform:translateY(7px); opacity:0 } }
+@keyframes wi-flash { 0%,92%,100%{ opacity:1 } 94%{ opacity:.2 } 96%{ opacity:1 } }
+
 
 /* Ambient weather background: subtle, slow, never literal. */
 @keyframes ambient-breathe {
