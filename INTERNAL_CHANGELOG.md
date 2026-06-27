@@ -1,5 +1,6 @@
 # Internal Changelog
 
+- Removed the top divider border between the "Další dny" header and the first daily forecast item, and added a top divider above the "Další dny" header to match the styling of "Výhled" for section consistency.
 - Fixed current conditions text color legibility on night/storm/rain graphics to ink color (#16161a).
 - Switched static hourly grid to a horizontally scrolling 24-hour strip and formatted all wind speed indicators to m/s.
 - Cleaned padding and margins on hourly scroll, daily list, alert, text card, and outlook list to align perfectly with the screen margin.

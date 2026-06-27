@@ -55,13 +55,13 @@ export function DailyList({
   return (
     <div className="bg-[#f4f3f0] text-[#16161a] pb-[52px]">
       {/* Header */}
-      <div className="text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold mb-[2px] px-0">
+      <div className="text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold mb-[2px] px-0 border-t border-[#cfcdc6] pt-3">
         DALŠÍ DNY
       </div>
 
       {/* Rows */}
       <div className="px-0">
-        {displayedDays.map((d) => {
+        {displayedDays.map((d, i) => {
           // Check for snow condition
           const condition = conditionFor(d.precipMm, 35, d.lowC);
 
@@ -85,7 +85,7 @@ export function DailyList({
           return (
             <div
               key={d.date}
-              className="flex items-center py-[6px] border-t border-[#cfcdc6]"
+              className={`flex items-center py-[6px] ${i === 0 ? "" : "border-t border-[#cfcdc6]"}`}
             >
               {/* Day label */}
               <span className="w-[40px] shrink-0 text-[13px] font-semibold tracking-[0.04em]">
