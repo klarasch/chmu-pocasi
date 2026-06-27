@@ -1,5 +1,16 @@
 # Internal Changelog
 
+- Fixed current conditions text color legibility on night/storm/rain graphics to ink color (#16161a).
+- Switched static hourly grid to a horizontally scrolling 24-hour strip and formatted all wind speed indicators to m/s.
+- Cleaned padding and margins on hourly scroll, daily list, alert, text card, and outlook list to align perfectly with the screen margin.
+- Updated alert banner layout: no background, top border matching severity color, bottom border, no side borders, and px-0.
+- Combined the written text description and hourly strip into a single "Dnes" section by reordering page elements and removing the "Hodinová" header.
+- Standardized text typography size and color across the "Dnes" description and qualitative "Výhled" daily list items.
+- Renamed daily index header "5DENNÍ PŘEDPOVĚĎ" to "DALŠÍ DNY".
+- Removed mock status bar, padded masthead top edge for PWA notch, and increased hero container height.
+- Removed outer cards container to flow hourly and today summaries flat, and disabled alert banner rounded corners.
+- Translated all UI labels to Czech, removed "slovní" label badges, and elevated floating navigation pill position.
+- Integrated hourly wind speed data in grids and daily maximum wind speed calculations from GRIB2 in aggregated daily lists.
 - Redesigned the user interface to match the Swiss editorial "Flat poster" prototype using CSS-based Bauhaus icons, static hourly grids, and a liquid glass pill.
 - Updated Radar layout with OpenFreeMap Positron light style, paper timelines, and a CSS-animated radar sweep loading placeholder.
 - Enabled native iOS/macOS Safari overscroll scroll bounce via `overscroll-behavior-y: auto`.

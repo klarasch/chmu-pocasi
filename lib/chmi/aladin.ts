@@ -56,6 +56,7 @@ export type DailyPoint = {
   highC: number;
   lowC: number;
   precipMm: number;
+  maxWindSpeedKmh?: number;
 };
 
 export type AladinForecast = {
@@ -292,5 +293,6 @@ function aggregateDaily(hourly: HourlyPoint[]): DailyPoint[] {
     highC: Math.max(...points.map((p) => p.temperatureC)),
     lowC: Math.min(...points.map((p) => p.temperatureC)),
     precipMm: points.reduce((sum, p) => sum + p.precipMm, 0),
+    maxWindSpeedKmh: Math.max(...points.map((p) => p.windSpeedKmh)),
   }));
 }

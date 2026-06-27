@@ -5,7 +5,7 @@ This guide explains how to use and navigate the ČHMÚ Počasí weather applicat
 ## Layout and Navigation
 
 The app is structured as a standalone progressive web application with a floating navigation bar at the bottom:
-1. **Předpověď (Forecast)**: The default tab, showing current conditions, hourly predictions, ČHMÚ narrative outlook, and a 7-day forecast.
+1. **Předpověď (Forecast)**: The default tab, showing current conditions, a unified "Dnes" section (combining a written text description and a 24-hour horizontally scrollable hourly strip), and a daily forecast index (Další dny) with a qualitative text outlook.
 2. **Radar**: A full-bleed map displaying the latest meteorological radar frames (past recordings and nowcasts) centered on your location.
 
 ## Gestures & Controls
@@ -31,6 +31,9 @@ The app is structured as a standalone progressive web application with a floatin
 - The hero shape floats and drifts ambiently, casting three staggered ghost echoes behind it.
 - Key weather icons (sun, moon, clouds, rain, storm, snow, fog) are custom HTML/CSS elements built from pure geometric primitives.
 - Micro-animations animate raindrops, snow dots, fog bars, and lightning bolts in real-time.
+
+### Wind Speed Units
+- All wind speeds (current, hourly, and daily maxima) are displayed in meters per second (`m/s`), matching standard Czech meteorological observations.
 
 ### Liquid Glass Navigation Pill
 - Toggling between Forecast and Radar uses a floating liquid glass control pill with transparent backing, a high-saturate blur backdrop filter, and custom CSS Forecast/Radar icons.

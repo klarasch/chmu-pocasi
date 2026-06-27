@@ -27,12 +27,27 @@ All notable changes to this project will be documented in this file.
 
 
 ### Changed
+- Added wind speed indicators to the static hourly grid (hourly wind speed) and the 5-day daily forecast index (maximum daily wind speed calculated from GRIB2).
+- Elevated the bottom tab bar floating position to prevent collision with iOS/Android home indicator bars.
 - Card appearance fade-up transition modified to start from `20px` translation offset and `0.98` scale, using a smoother, premium ease curve (`cubic-bezier(0.16, 1, 0.3, 1)`) and longer duration (`0.65s`).
 - Background meteorological isolines (`ambient-iso` keyframes) updated to drift on both X and Y axes and scale subtly for a more natural, atmospheric feel.
 - Cleaned up custom MapLibre attribution styling to remove `!important` markers and format styling rules under Biome guidelines.
 - Wrapped all `sessionStorage` operations in `try-catch` blocks to protect against runtime `SecurityError` DOMExceptions on mobile browsers when in private browsing mode or with strict privacy rules.
 
 ### Fixed
+- Fixed legibility of current conditions temperature and weather labels on night, rain, and storm graphics by forcing the primary ink color `#16161a` against the light cream paper background.
+- Fixed layout alignment and typography: matched "Vítr" block styling (font size and vertical alignment) to "Srážky" and "Vlhkost", and standardized body text styling for the daily outlook items and "Dnes" text description.
+- Resolved hourly forecast scroll issue: converted the static 6-column grid to a horizontally scrolling 24-hour strip.
+- Removed extra paddings on all forecast components (hourly, daily list, text card, and outlook list) to align perfectly with the screen margin of the alert.
+- Updated alert banner styling: removed the background, added a severity-colored top border, removed side borders, kept the bottom border, and aligned padding to the screen margin.
+- Displayed wind speed in `m/s` (meters per second) rather than `km/h` in current conditions, hourly strip, and daily list.
+- Renamed daily index header "5DENNÍ PŘEDPOVĚĎ" to "DALŠÍ DNY".
+- Combined the written text description and hourly strip into a single "Dnes" section by reordering them and removing the separate "Hodinová" title header.
+- Removed mock status bar overlay with duplicate time/percentage that clashed with native phone status bars.
+- Fixed cramped layout in standalone PWA mode by increasing Hero container height and padding the top masthead to clear the notch using CSS safe area inset variables.
+- Removed extra card container boxes from hourly and text forecasts to let them flow flat on the warm paper background.
+- Removed rounded corners from the alert banner, and eliminated unnecessary "slovní" label badges on outlook forecasts.
+- Translated all English UI labels (`Forecast`, `PRECIP`, `WIND`, `HUMIDITY`, `HOURLY`, `5-DAY INDEX`, `TODAY`) to Czech.
 - Fixed background isoline animations in Safari and Firefox by separating lines into multiple SVG layers and animating the SVG containers directly, bypassing browser rendering bugs related to path-level CSS transforms.
 - Fixed Safari status bar and navigation toolbar opaque solid bars. Removed theme-color meta tags, manifest `theme_color`, and edge fixed shims to let Safari and iOS PWA standalone mode dynamically render fully transparent/translucent status and toolbar chrome, displaying the weather gradient seamlessly behind them. Removed `background-attachment: fixed` on `html` and `body` elements to resolve scroll-rendering glitches on iOS.
 - Fixed timezone parsing bug in "7denní výhled" where text-forecast days were parsed in UTC, causing Saturday (sobota) to be erroneously filtered out and skipped because its UTC date was shifted to the previous day (Friday) and matched the end of the ALADIN numeric daily series. Force all date conversions and comparisons into the local `Europe/Prague` timezone.

@@ -15,8 +15,6 @@ import {
   type DailyTextForecast,
   getNationalTextForecast,
 } from "@/lib/chmi/text";
-import { conditionFor, isNightHour } from "@/lib/weather-codes";
-
 
 export const dynamic = "force-dynamic";
 
@@ -42,15 +40,13 @@ export default function ForecastPage() {
           <Alerts alertsPromise={alertsPromise} />
         </Suspense>
 
-        <div className="divide-y divide-border-subtle rounded-2xl border border-border-subtle bg-surface">
-          <Suspense fallback={<HourlyPlaceholder />}>
-            <Hourly aladinPromise={aladinPromise} />
-          </Suspense>
+        <Suspense fallback={null}>
+          <TextCard textPromise={textPromise} />
+        </Suspense>
 
-          <Suspense fallback={null}>
-            <TextCard textPromise={textPromise} />
-          </Suspense>
-        </div>
+        <Suspense fallback={<HourlyPlaceholder />}>
+          <Hourly aladinPromise={aladinPromise} />
+        </Suspense>
 
         <Suspense fallback={<DailyPlaceholder />}>
           <Daily aladinPromise={aladinPromise} textPromise={textPromise} />
@@ -80,24 +76,19 @@ async function Hero({
     );
   }
 
-  const condition = conditionFor(current.precipMm, current.cloudCoverPct, current.temperatureC);
-  const isNight = isNightHour(current.time);
-
   return (
-    <>
-      <div className="animate-fade-up">
-        <CurrentConditions
-          time={current.time}
-          temperatureC={current.temperatureC}
-          precipMm={current.precipMm}
-          cloudCoverPct={current.cloudCoverPct}
-          windSpeedKmh={current.windSpeedKmh}
-          windDirDeg={current.windDirDeg}
-          highC={today?.highC}
-          lowC={today?.lowC}
-        />
-      </div>
-    </>
+    <div className="animate-fade-up">
+      <CurrentConditions
+        time={current.time}
+        temperatureC={current.temperatureC}
+        precipMm={current.precipMm}
+        cloudCoverPct={current.cloudCoverPct}
+        windSpeedKmh={current.windSpeedKmh}
+        windDirDeg={current.windDirDeg}
+        highC={today?.highC}
+        lowC={today?.lowC}
+      />
+    </div>
   );
 }
 

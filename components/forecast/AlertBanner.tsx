@@ -21,8 +21,8 @@ export function AlertBanner({ alerts }: { alerts: Alert[] }) {
         return (
           <div
             key={a.identifier}
-            className="flex items-center gap-3 rounded-2xl border border-border-subtle bg-surface py-3 pl-3.5 pr-4"
-            style={{ borderLeft: `3px solid ${color}` }}
+            className="flex items-center gap-3 border-b border-border-subtle py-3 px-0 bg-transparent"
+            style={{ borderTop: `3.5px solid ${color}` }}
           >
             {/* biome-ignore lint/a11y/noSvgWithoutTitle: decorative, event name is adjacent */}
             <svg

@@ -43,7 +43,6 @@ body {
   position: relative;
 }
 
-
 /* Pull-to-refresh: the cloud bobs gently in place while data reloads,
    and three little drops fall out from underneath it in sequence — a
    weather-themed stand-in for a loading spinner. */
@@ -123,16 +122,110 @@ body {
   }
 }
 
-@keyframes fpFloatA { 0%,100%{ transform:translate(0,0) } 50%{ transform:translate(-15px,19px) } }
-@keyframes fpFloatB { 0%,100%{ transform:translate(0,0) } 50%{ transform:translate(12px,-12px) } }
-@keyframes fpSpin   { from{ transform:rotate(0deg) } to{ transform:rotate(360deg) } }
-@keyframes fpRain   { 0%{ transform:translateY(-4px);opacity:0 } 25%{ opacity:1 } 100%{ transform:translateY(14px);opacity:0 } }
-@keyframes fpSnow   { 0%{ transform:translateY(-4px) rotate(0deg);opacity:0 } 30%{ opacity:1 } 100%{ transform:translateY(14px) rotate(180deg);opacity:0 } }
-@keyframes fpFlash  { 0%,88%,100%{ opacity:1 } 90%{ opacity:.1 } 93%{ opacity:1 } }
-@keyframes wi-rain  { 0%{ transform:translateY(-3px); opacity:0 } 25%{ opacity:1 } 100%{ transform:translateY(7px); opacity:0 } }
-@keyframes wi-snow  { 0%{ transform:translateY(-3px); opacity:0 } 25%{ opacity:1 } 100%{ transform:translateY(7px); opacity:0 } }
-@keyframes wi-flash { 0%,92%,100%{ opacity:1 } 94%{ opacity:.2 } 96%{ opacity:1 } }
-
+@keyframes fpFloatA {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-15px, 19px);
+  }
+}
+@keyframes fpFloatB {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(12px, -12px);
+  }
+}
+@keyframes fpSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fpRain {
+  0% {
+    transform: translateY(-4px);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+}
+@keyframes fpSnow {
+  0% {
+    transform: translateY(-4px) rotate(0deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(14px) rotate(180deg);
+    opacity: 0;
+  }
+}
+@keyframes fpFlash {
+  0%,
+  88%,
+  100% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.1;
+  }
+  93% {
+    opacity: 1;
+  }
+}
+@keyframes wi-rain {
+  0% {
+    transform: translateY(-3px);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(7px);
+    opacity: 0;
+  }
+}
+@keyframes wi-snow {
+  0% {
+    transform: translateY(-3px);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(7px);
+    opacity: 0;
+  }
+}
+@keyframes wi-flash {
+  0%,
+  92%,
+  100% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 0.2;
+  }
+  96% {
+    opacity: 1;
+  }
+}
 
 /* Ambient weather background: subtle, slow, never literal. */
 @keyframes ambient-breathe {

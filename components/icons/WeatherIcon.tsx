@@ -16,7 +16,16 @@ export function WeatherIcon({
   const scale = size / 30;
 
   // Map our Condition types to Bauhaus icon types
-  let iconType: "sun" | "moon" | "partly" | "partly-night" | "cloud" | "rain" | "storm" | "snow" | "fog" = "sun";
+  let iconType:
+    | "sun"
+    | "moon"
+    | "partly"
+    | "partly-night"
+    | "cloud"
+    | "rain"
+    | "storm"
+    | "snow"
+    | "fog" = "sun";
   if (condition === "clear") {
     iconType = isNight ? "moon" : "sun";
   } else if (condition === "partly-cloudy") {
@@ -69,9 +78,18 @@ export function WeatherIcon({
         {iconType === "partly" && (
           <>
             <div className="absolute right-[2px] top-[1px] w-[15px] h-[15px] rounded-full bg-[#f2c12e]" />
-            <div className="absolute left-[2px] bottom-[7px] w-10 h-10 rounded-full bg-[#c9c6bd] scale-25 origin-bottom-left" style={{ width: "10px", height: "10px" }} />
-            <div className="absolute right-[5px] bottom-[8px] w-9 h-9 rounded-full bg-[#c9c6bd] scale-25 origin-bottom-right" style={{ width: "9px", height: "9px" }} />
-            <div className="absolute left-[3px] bottom-[5px] w-6 h-[11px] rounded-[6px] bg-[#c9c6bd]" style={{ width: "24px" }} />
+            <div
+              className="absolute left-[2px] bottom-[7px] w-10 h-10 rounded-full bg-[#c9c6bd] scale-25 origin-bottom-left"
+              style={{ width: "10px", height: "10px" }}
+            />
+            <div
+              className="absolute right-[5px] bottom-[8px] w-9 h-9 rounded-full bg-[#c9c6bd] scale-25 origin-bottom-right"
+              style={{ width: "9px", height: "9px" }}
+            />
+            <div
+              className="absolute left-[3px] bottom-[5px] w-6 h-[11px] rounded-[6px] bg-[#c9c6bd]"
+              style={{ width: "24px" }}
+            />
           </>
         )}
 
@@ -120,7 +138,8 @@ export function WeatherIcon({
             <div
               className="absolute left-[11px] bottom-[-1px] w-[11px] h-[14px] bg-[#f2c12e] animate-[wi-flash_2.4s_linear_infinite]"
               style={{
-                clipPath: "polygon(52% 0, 18% 58%, 44% 58%, 28% 100%, 84% 36%, 54% 36%)",
+                clipPath:
+                  "polygon(52% 0, 18% 58%, 44% 58%, 28% 100%, 84% 36%, 54% 36%)",
               }}
             />
           </>

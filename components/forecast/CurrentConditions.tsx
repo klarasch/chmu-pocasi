@@ -1,9 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { WeatherIcon } from "@/components/icons/WeatherIcon";
 import {
-  type Condition,
   CONDITION_LABEL,
   conditionFor,
   isNightHour,
@@ -33,45 +30,42 @@ export function CurrentConditions({
   const condition = conditionFor(precipMm, cloudCoverPct, temperatureC);
   const isNight = isNightHour(time);
 
-  // Live time for the status bar
-  const [localTime, setLocalTime] = useState("");
-  useEffect(() => {
-    const update = () => {
-      const d = new Date();
-      setLocalTime(
-        d.toLocaleTimeString("cs-CZ", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      );
-    };
-    update();
-    const timer = setInterval(update, 60000);
-    return () => clearInterval(timer);
-  }, []);
-
   // Format the date label for the masthead
-  const dateLabel = new Date().toLocaleDateString("cs-CZ", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  }).toUpperCase();
+  const dateLabel = new Date()
+    .toLocaleDateString("cs-CZ", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    })
+    .toUpperCase();
 
   // Convert wind degrees to Czech compass direction
   const getWindDirection = (deg?: number): string => {
     if (deg === undefined) return "";
     const val = Math.floor(deg / 22.5 + 0.5);
     const directions = [
-      "S", "SSV", "SV", "VSV",
-      "V", "VJV", "JV", "JJV",
-      "J", "JJZ", "JZ", "ZJZ",
-      "Z", "SZZ", "SZ", "SSZ"
+      "S",
+      "SSV",
+      "SV",
+      "VSV",
+      "V",
+      "VJV",
+      "JV",
+      "JJV",
+      "J",
+      "JJZ",
+      "JZ",
+      "ZJZ",
+      "Z",
+      "SZZ",
+      "SZ",
+      "SSZ",
     ];
     return directions[val % 16];
   };
 
   const windDirection = getWindDirection(windDirDeg);
-  const windValue = `${Math.round(windSpeedKmh)} km/h ${windDirection}`.trim();
+  const windSpeedMs = Math.round(windSpeedKmh / 3.6);
 
   // Estimate relative humidity since it is not parsed from GRIB2 directly
   const calculatedHumidity = Math.min(
@@ -82,14 +76,13 @@ export function CurrentConditions({
         40 +
           cloudCoverPct * 0.4 +
           (precipMm > 0 ? 30 : 0) -
-          (temperatureC > 20 ? (temperatureC - 20) * 1.5 : 0)
-      )
-    )
+          (temperatureC > 20 ? (temperatureC - 20) * 1.5 : 0),
+      ),
+    ),
   );
 
   // Configuration for the giant Bauhaus graphic
   const dark = "#16161a";
-  const white = "#ffffff";
 
   // Map Condition to config values
   const getConfig = (): {
@@ -108,7 +101,7 @@ export function CurrentConditions({
         return {
           heroColor: "#1e2d4a",
           cloudColor: "#2e3e58",
-          tempColor: white,
+          tempColor: dark,
           showCloud: true,
           showRain: false,
           showLightning: false,
@@ -121,7 +114,7 @@ export function CurrentConditions({
         return {
           heroColor: "#1e2d4a",
           cloudColor: "",
-          tempColor: white,
+          tempColor: dark,
           showCloud: false,
           showRain: false,
           showLightning: false,
@@ -173,7 +166,7 @@ export function CurrentConditions({
         return {
           heroColor: "#7c7a72",
           cloudColor: "#8c8a82",
-          tempColor: white,
+          tempColor: dark,
           showCloud: true,
           showRain: true,
           showLightning: false,
@@ -185,7 +178,7 @@ export function CurrentConditions({
         return {
           heroColor: "#3c3a34",
           cloudColor: "#5c5a52",
-          tempColor: white,
+          tempColor: dark,
           showCloud: true,
           showRain: true,
           showLightning: true,
@@ -252,14 +245,8 @@ export function CurrentConditions({
 
   return (
     <div className="flex flex-col select-none">
-      {/* Status Bar */}
-      <div className="flex justify-between items-center px-[26px] pt-4 text-xs font-semibold z-10 text-[#16161a]">
-        <span>{localTime}</span>
-        <span className="letter-spacing-[0.04em]">82%</span>
-      </div>
-
       {/* Masthead */}
-      <div className="px-[26px] pt-3 pb-[9px] flex justify-between items-center border-b-[1.5px] border-[#16161a] z-10 text-[#16161a]">
+      <div className="px-[26px] pt-[max(3rem,calc(env(safe-area-inset-top)+8px))] pb-[9px] flex justify-between items-center border-b-[1.5px] border-[#16161a] z-10 text-[#16161a]">
         <span className="text-xs font-bold tracking-[0.18em] flex items-center gap-[7px]">
           <span className="w-[7px] h-[7px] rounded-full bg-[#16161a]" />
           {locationLabel.toUpperCase()}
@@ -270,7 +257,7 @@ export function CurrentConditions({
       </div>
 
       {/* Hero graphic area */}
-      <div className="relative h-[148px] shrink-0 overflow-hidden bg-[#f4f3f0]">
+      <div className="relative h-[190px] shrink-0 overflow-hidden bg-[#f4f3f0]">
         {/* Drift Echoes */}
         <div
           className="absolute top-[-120px] right-[-120px] w-[460px] h-[460px] rounded-full opacity-[0.08] animate-[fpFloatA_9s_ease-in-out_0.9s_infinite]"
@@ -335,7 +322,8 @@ export function CurrentConditions({
           <div
             className="absolute right-[112px] top-[118px] w-[22px] h-[30px] bg-[#f2c12e] animate-[fpFlash_2.2s_linear_infinite]"
             style={{
-              clipPath: "polygon(62% 0,18% 52%,50% 52%,30% 100%,88% 38%,54% 38%)",
+              clipPath:
+                "polygon(62% 0,18% 52%,50% 52%,30% 100%,88% 38%,54% 38%)",
             }}
           />
         )}
@@ -385,7 +373,7 @@ export function CurrentConditions({
       <div className="flex border-t-[1.5px] border-[#16161a] border-b border-[#cfcdc6] bg-[#f4f3f0] text-[#16161a]">
         <div className="flex-1 py-[11px] pl-[26px]">
           <div className="text-[9px] tracking-[0.13em] text-[#6b6b70] font-bold">
-            PRECIP
+            SRÁŽKY
           </div>
           <div
             className="text-[19px] font-semibold mt-[3px]"
@@ -397,15 +385,18 @@ export function CurrentConditions({
         </div>
         <div className="flex-1 py-[11px] pl-[18px] border-l border-[#cfcdc6]">
           <div className="text-[9px] tracking-[0.13em] text-[#6b6b70] font-bold">
-            WIND
+            VÍTR
           </div>
-          <div className="text-[15px] font-semibold mt-[3px] truncate pr-2">
-            {windValue}
+          <div className="text-[19px] font-semibold mt-[3px] truncate pr-1">
+            {windSpeedMs}
+            <span className="text-[12px] font-medium text-[#6b6b70] ml-1">
+              m/s {windDirection}
+            </span>
           </div>
         </div>
         <div className="flex-1 py-[11px] pl-[18px] border-l border-[#cfcdc6]">
           <div className="text-[9px] tracking-[0.13em] text-[#6b6b70] font-bold">
-            HUMIDITY
+            VLHKOST
           </div>
           <div className="text-[19px] font-semibold mt-[3px]">
             {calculatedHumidity}

@@ -49,4 +49,3 @@ export const CONDITION_LABEL: Record<Condition, string> = {
   snow: "Sněžení",
   fog: "Mlha",
 };
-

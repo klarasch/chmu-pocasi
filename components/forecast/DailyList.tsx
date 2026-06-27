@@ -9,6 +9,7 @@ type DailyPoint = {
   highC: number;
   lowC: number;
   precipMm: number;
+  maxWindSpeedKmh?: number;
 };
 
 const getDayLabel = (iso: string) => {
@@ -54,20 +55,23 @@ export function DailyList({
   return (
     <div className="bg-[#f4f3f0] text-[#16161a] pb-[52px]">
       {/* Header */}
-      <div className="text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold mb-[2px] px-[26px]">
-        5-DAY INDEX
+      <div className="text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold mb-[2px] px-0">
+        DALŠÍ DNY
       </div>
 
       {/* Rows */}
-      <div className="px-[26px]">
+      <div className="px-0">
         {displayedDays.map((d) => {
           // Check for snow condition
           const condition = conditionFor(d.precipMm, 35, d.lowC);
-          
+
           // Estimate probability based on precip amount
           let precipVal = 0;
           if (d.precipMm > 0.1) {
-            precipVal = Math.min(100, Math.max(10, Math.round(d.precipMm * 15 + 20)));
+            precipVal = Math.min(
+              100,
+              Math.max(10, Math.round(d.precipMm * 15 + 20)),
+            );
           }
           const precipText = `${precipVal}%`;
           const pColor = precipVal === 0 ? "#bdbbb4" : "oklch(0.55 0.17 256)";
@@ -89,10 +93,7 @@ export function DailyList({
               </span>
 
               {/* Weather icon */}
-              <WeatherIcon
-                condition={condition}
-                size={26}
-              />
+              <WeatherIcon condition={condition} size={26} />
 
               {/* Precip% */}
               <span
@@ -104,6 +105,13 @@ export function DailyList({
 
               {/* Spacer */}
               <span className="flex-1" />
+
+              {/* Wind Speed */}
+              {d.maxWindSpeedKmh !== undefined && (
+                <span className="w-[50px] shrink-0 text-right text-[11px] text-[#6b6b70] font-medium tabular-nums mr-3">
+                  {Math.round(d.maxWindSpeedKmh / 3.6)} m/s
+                </span>
+              )}
 
               {/* Temp range bar */}
               <span className="w-[54px] h-[3px] bg-[#e4e2db] rounded-[2px] relative mr-[12px] overflow-hidden shrink-0">
@@ -129,7 +137,7 @@ export function DailyList({
 
       {/* Tail Qualitative Days - for backup/additional context if desired */}
       {tail.length > 0 && (
-        <div className="mt-4 px-[26px]">
+        <div className="mt-4 px-0">
           <div className="text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold mb-[6px] border-t border-[#cfcdc6] pt-3">
             VÝHLED
           </div>
@@ -143,11 +151,8 @@ export function DailyList({
                   <span className="text-[#16161a]">
                     {getDayLabel(d.startTime)}
                   </span>
-                  <span className="text-[10px] text-[#9a9a9f] uppercase tracking-wider">
-                    slovní
-                  </span>
                 </div>
-                <span className="text-[12px] text-[#6b6b70] leading-relaxed">
+                <span className="text-[13px] leading-[1.4] text-[#16161a] font-normal">
                   {[
                     d.sections.find((s) => s.name === "textIntro")?.text,
                     d.sections.find((s) => s.name === "textWeather")?.text,
