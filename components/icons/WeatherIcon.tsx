@@ -69,7 +69,7 @@ export function WeatherIcon({
           <div
             className="absolute left-[10px] top-[2px] w-[18px] h-[18px] rounded-full"
             style={{
-              boxShadow: "-6px 5px 0 0 #f2c12e",
+              boxShadow: "-6px 5px 0 0 var(--icon-moon)",
             }}
           />
         )}
@@ -99,7 +99,7 @@ export function WeatherIcon({
             <div
               className="absolute right-[4px] top-[-1px] w-[12px] h-[12px] rounded-full"
               style={{
-                boxShadow: "-3px 3px 0 0 #f2c12e",
+                boxShadow: "-3px 3px 0 0 var(--icon-moon)",
               }}
             />
             <div className="absolute left-[2px] bottom-[7px] w-[10px] h-[10px] rounded-full bg-[#c9c6bd]" />
