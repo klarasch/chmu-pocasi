@@ -67,7 +67,7 @@ async function Hero({
 
   if (!current) {
     return (
-      <div className="px-4 pb-2 pt-[max(3.5rem,calc(env(safe-area-inset-top)+1.5rem))]">
+      <div className="px-4 pb-2 pt-[max(1.5rem,calc(env(safe-area-inset-top)+6px))]">
         <div className="rounded-2xl border border-border-subtle bg-surface p-3 text-xs text-white/55">
           Numerická předpověď ALADIN momentálně není dostupná, zobrazena je jen
           slovní předpověď ČHMÚ.
@@ -94,7 +94,7 @@ async function Hero({
 
 function HeroPlaceholder() {
   return (
-    <div className="flex flex-col items-center gap-3 px-4 pb-12 pt-[max(3.5rem,calc(env(safe-area-inset-top)+1.5rem))]">
+    <div className="flex flex-col items-center gap-3 px-4 pb-12 pt-[max(1.5rem,calc(env(safe-area-inset-top)+6px))]">
       <div className="text-sm font-medium text-white/55">Praha</div>
       <div className="py-6 text-sm text-white/55">Načítání počasí…</div>
     </div>

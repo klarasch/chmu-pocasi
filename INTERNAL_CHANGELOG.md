@@ -1,5 +1,7 @@
 # Internal Changelog
 
+- Removed the "Dnes" title header from the text forecast card, and updated the alert banner to highlight with a left border only (no top, right, or bottom borders).
+- Reduced top padding of the current conditions masthead and placeholders to remove extra whitespace at the top of the screen.
 - Increased the whitespace (margin-top to 16px) between the big hero temperature and the subtitle, and aligned the main container's horizontal padding to 26px to match the hero margin.
 - Updated the body text color of today's written forecast and daily qualitative outlooks to use the secondary text color (#6b6b70) instead of ink.
 - Removed the top divider border between the "Další dny" header and the first daily forecast item, and added a top divider above the "Další dny" header to match the styling of "Výhled" for section consistency.

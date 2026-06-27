@@ -246,7 +246,7 @@ export function CurrentConditions({
   return (
     <div className="flex flex-col select-none">
       {/* Masthead */}
-      <div className="px-[26px] pt-[max(3rem,calc(env(safe-area-inset-top)+8px))] pb-[9px] flex justify-between items-center border-b-[1.5px] border-[#16161a] z-10 text-[#16161a]">
+      <div className="px-[26px] pt-[max(1.25rem,calc(env(safe-area-inset-top)+6px))] pb-[9px] flex justify-between items-center border-b-[1.5px] border-[#16161a] z-10 text-[#16161a]">
         <span className="text-xs font-bold tracking-[0.18em] flex items-center gap-[7px]">
           <span className="w-[7px] h-[7px] rounded-full bg-[#16161a]" />
           {locationLabel.toUpperCase()}
