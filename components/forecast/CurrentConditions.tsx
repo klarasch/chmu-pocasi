@@ -356,7 +356,7 @@ export function CurrentConditions({
             {Math.round(temperatureC)}
             <span className="text-[36px] align-top font-normal">°</span>
           </div>
-          <div className="flex items-baseline gap-3 mt-[5px]">
+          <div className="flex items-baseline gap-3 mt-[16px]">
             <span className="text-[18px] font-semibold">
               {CONDITION_LABEL[condition]}
             </span>

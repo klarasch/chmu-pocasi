@@ -35,7 +35,7 @@ export default function ForecastPage() {
         <Hero aladinPromise={aladinPromise} />
       </Suspense>
 
-      <main className="flex flex-col gap-4 px-4 pt-4 pb-32">
+      <main className="flex flex-col gap-4 px-[26px] pt-4 pb-32">
         <Suspense fallback={null}>
           <Alerts alertsPromise={alertsPromise} />
         </Suspense>
