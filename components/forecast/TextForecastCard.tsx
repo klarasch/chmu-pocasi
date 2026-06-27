@@ -14,7 +14,7 @@ export function TextForecastCard({ day }: { day: DailyTextForecast }) {
       <div className="text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold mb-[4px]">
         DNES
       </div>
-      <div className="text-[13px] leading-[1.4] text-[#16161a] font-normal">
+      <div className="text-[13px] leading-[1.4] text-[#6b6b70] font-normal">
         {summaryText || day.headline}
       </div>
     </div>

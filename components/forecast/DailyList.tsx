@@ -152,7 +152,7 @@ export function DailyList({
                     {getDayLabel(d.startTime)}
                   </span>
                 </div>
-                <span className="text-[13px] leading-[1.4] text-[#16161a] font-normal">
+                <span className="text-[13px] leading-[1.4] text-[#6b6b70] font-normal">
                   {[
                     d.sections.find((s) => s.name === "textIntro")?.text,
                     d.sections.find((s) => s.name === "textWeather")?.text,
