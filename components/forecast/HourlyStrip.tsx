@@ -13,7 +13,7 @@ type HourlyPoint = {
 
 export function HourlyStrip({ hourly }: { hourly: HourlyPoint[] }) {
   return (
-    <div className="py-[13px] bg-[#f4f3f0] text-[#16161a]">
+    <div className="py-[13px] bg-background text-foreground">
       {/* Scrollable Row */}
       <div className="flex overflow-x-auto scrollbar-none px-0 gap-0">
         {hourly.map((h, i) => {
@@ -42,14 +42,14 @@ export function HourlyStrip({ hourly }: { hourly: HourlyPoint[] }) {
           }
           const precipPct = `${precipPctVal}%`;
           const pColor =
-            precipPctVal === 0 ? "#bdbbb4" : "oklch(0.55 0.17 256)";
+            precipPctVal === 0 ? "var(--foreground-muted)" : "var(--accent)";
 
           return (
             <div
               key={h.time}
-              className="w-[64px] shrink-0 border-l border-[#cfcdc6] px-[2px] flex flex-col items-center gap-[6px]"
+              className="w-[64px] shrink-0 border-l border-border-subtle px-[2px] flex flex-col items-center gap-[6px]"
             >
-              <div className="text-[11px] text-[#6b6b70] font-normal">
+              <div className="text-[11px] text-foreground-muted font-normal">
                 {isCurrent ? "Nyní" : timeLabel}
               </div>
               <WeatherIcon condition={condition} isNight={isNight} size={30} />
@@ -59,7 +59,7 @@ export function HourlyStrip({ hourly }: { hourly: HourlyPoint[] }) {
               <div className="text-[10px] font-bold" style={{ color: pColor }}>
                 {precipPct}
               </div>
-              <div className="text-[9px] text-[#9a9a9f] font-medium leading-none">
+              <div className="text-[9px] text-foreground-muted font-medium leading-none">
                 {Math.round(h.windSpeedKmh / 3.6)} m/s
               </div>
             </div>

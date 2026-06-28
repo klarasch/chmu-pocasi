@@ -3,16 +3,35 @@
 :root {
   --background: #f4f3f0;
   --foreground: #16161a;
+  --foreground-muted: #6b6b70; /* secondary text — ~4.6:1 on background, the app's one secondary text color */
   --surface: #ecebe6;
   --surface-strong: #e4e2db;
   --border-subtle: #cfcdc6;
   --accent: oklch(0.55 0.17 256);
   --weather-bg: #f4f3f0;
+  --icon-moon: #5b6171; /* cool slate-blue crescent — ~5.4:1 on background, distinct from the warm cloud grays */
+
+  /* Hero illustration theme — scoped to the temperature/condition graphic
+     only (applied via [data-hero-night] on that element specifically, not
+     the masthead or conditions strip, which always stay on the page's
+     standard day tokens above). Day defaults to those same tokens so there
+     is one source of truth; night overrides below. */
+  --hero-sky: var(--background);
+  --hero-ink: var(--foreground);
+  --hero-ink-muted: var(--foreground-muted);
+}
+
+/* Night hero graphic: near-black sky, off-white ink, cool muted secondary. */
+[data-hero-night="true"] {
+  --hero-sky: #0b0c12;
+  --hero-ink: #f7f7f9; /* ~18:1 on night sky */
+  --hero-ink-muted: #a7aab6; /* ~7.5:1 on night sky */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
   --color-surface: var(--surface);
   --color-surface-strong: var(--surface-strong);
   --color-border-subtle: var(--border-subtle);
@@ -128,7 +147,7 @@ body {
     transform: translate(0, 0);
   }
   50% {
-    transform: translate(-15px, 19px);
+    transform: translate(-26px, 30px);
   }
 }
 @keyframes fpFloatB {
@@ -137,7 +156,28 @@ body {
     transform: translate(0, 0);
   }
   50% {
-    transform: translate(12px, -12px);
+    transform: translate(20px, -18px);
+  }
+}
+
+/* Night moon: drifts on a bold arc so the lagging silver echoes smear into a
+   visible comet-like light trail, and the disc itself pulses a soft halo. */
+@keyframes moonDrift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-30px, 22px);
+  }
+}
+@keyframes moonGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 34px 4px var(--moon-glow);
+  }
+  50% {
+    box-shadow: 0 0 60px 12px var(--moon-glow);
   }
 }
 @keyframes fpSpin {

@@ -53,9 +53,9 @@ export function DailyList({
   const displayedDays = numericDays.slice(0, 5);
 
   return (
-    <div className="bg-[#f4f3f0] text-[#16161a] pb-[52px]">
+    <div className="bg-background text-foreground pb-[52px]">
       {/* Header */}
-      <div className="text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold mb-[2px] px-0 border-t border-[#cfcdc6] pt-3">
+      <div className="text-[9px] tracking-[0.16em] text-foreground-muted font-bold mb-[2px] px-0 border-t border-border-subtle pt-3">
         DALŠÍ DNY
       </div>
 
@@ -74,7 +74,8 @@ export function DailyList({
             );
           }
           const precipText = `${precipVal}%`;
-          const pColor = precipVal === 0 ? "#bdbbb4" : "oklch(0.55 0.17 256)";
+          const pColor =
+            precipVal === 0 ? "var(--foreground-muted)" : "var(--accent)";
 
           // Calculate bar left & right percentage
           const leftPct = ((d.lowC - rangeMin) / span) * 100;
@@ -85,7 +86,7 @@ export function DailyList({
           return (
             <div
               key={d.date}
-              className={`flex items-center py-[6px] ${i === 0 ? "" : "border-t border-[#cfcdc6]"}`}
+              className={`flex items-center py-[6px] ${i === 0 ? "" : "border-t border-border-subtle"}`}
             >
               {/* Day label */}
               <span className="w-[40px] shrink-0 text-[13px] font-semibold tracking-[0.04em]">
@@ -108,26 +109,26 @@ export function DailyList({
 
               {/* Wind Speed */}
               {d.maxWindSpeedKmh !== undefined && (
-                <span className="w-[50px] shrink-0 text-right text-[11px] text-[#6b6b70] font-medium tabular-nums mr-3">
+                <span className="w-[50px] shrink-0 text-right text-[11px] text-foreground-muted font-medium tabular-nums mr-3">
                   {Math.round(d.maxWindSpeedKmh / 3.6)} m/s
                 </span>
               )}
 
               {/* Temp range bar */}
-              <span className="w-[54px] h-[3px] bg-[#e4e2db] rounded-[2px] relative mr-[12px] overflow-hidden shrink-0">
+              <span className="w-[54px] h-[3px] bg-surface-strong rounded-[2px] relative mr-[12px] overflow-hidden shrink-0">
                 <span
-                  className="absolute top-0 bottom-0 bg-[#16161a] rounded-[2px]"
+                  className="absolute top-0 bottom-0 bg-foreground rounded-[2px]"
                   style={{ left: barL, right: barR }}
                 />
               </span>
 
               {/* Low Temp */}
-              <span className="text-[13px] text-[#9a9a9f] w-[24px] text-right shrink-0">
+              <span className="text-[13px] text-foreground-muted w-[24px] text-right shrink-0">
                 {Math.round(d.lowC)}
               </span>
 
               {/* High Temp */}
-              <span className="text-[13px] font-semibold text-[#16161a] w-[24px] text-right shrink-0 ml-[4px]">
+              <span className="text-[13px] font-semibold text-foreground w-[24px] text-right shrink-0 ml-[4px]">
                 {Math.round(d.highC)}
               </span>
             </div>
@@ -138,21 +139,21 @@ export function DailyList({
       {/* Tail Qualitative Days - for backup/additional context if desired */}
       {tail.length > 0 && (
         <div className="mt-4 px-0">
-          <div className="text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold mb-[6px] border-t border-[#cfcdc6] pt-3">
+          <div className="text-[9px] tracking-[0.16em] text-foreground-muted font-bold mb-[6px] border-t border-border-subtle pt-3">
             VÝHLED
           </div>
           <div className="flex flex-col gap-3">
             {tail.slice(0, 3).map((d) => (
               <div
                 key={d.headline}
-                className="flex flex-col gap-1 border-t border-[#cfcdc6]/40 pt-2 first:border-0 first:pt-0"
+                className="flex flex-col gap-1 border-t border-border-subtle/40 pt-2 first:border-0 first:pt-0"
               >
                 <div className="flex items-center justify-between text-xs font-semibold">
-                  <span className="text-[#16161a]">
+                  <span className="text-foreground">
                     {getDayLabel(d.startTime)}
                   </span>
                 </div>
-                <span className="text-[13px] leading-[1.4] text-[#6b6b70] font-normal">
+                <span className="text-[13px] leading-[1.4] text-foreground-muted font-normal">
                   {[
                     d.sections.find((s) => s.name === "textIntro")?.text,
                     d.sections.find((s) => s.name === "textWeather")?.text,
