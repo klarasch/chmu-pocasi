@@ -60,15 +60,14 @@ type CloudPuff = {
 // crawling in from off-screen.
 function buildPuffs(condition: Condition): CloudPuff[] {
   if (condition === "partly-cloudy") {
-    const tops = [58, 96, 132];
-    const dirs: Array<"A" | "B"> = ["A", "B", "A"];
+    const tops = [46, 74, 102, 128];
     return tops.map((top, i) => ({
       key: `puff-${i}`,
-      top: top + rand(-8, 8),
-      dir: dirs[i],
-      scale: rand(0.42, 0.62),
-      durMul: rand(0.75, 1.25),
-      delayFrac: rand(0, 1),
+      top: top + rand(-4, 4),
+      dir: "B", // Drifts from right to left (emitted from right)
+      scale: rand(0.48, 0.62),
+      durMul: 1.0, // Keep durations in sync to prevent drift and ensure constant sun coverage
+      delayFrac: i * 0.25, // Spaced evenly across the 4-cloud cycle
     }));
   }
   return [

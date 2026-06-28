@@ -42,6 +42,36 @@ export default function RadarPage() {
     );
   }, []);
 
+  // Prevent vertical scrolling/bounce of the root elements on the radar page
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+
+    const prevHtmlOverscroll = html.style.overscrollBehaviorY;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevHtmlHeight = html.style.height;
+    const prevBodyOverscroll = body.style.overscrollBehaviorY;
+    const prevBodyOverflow = body.style.overflow;
+    const prevBodyHeight = body.style.height;
+
+    html.style.overscrollBehaviorY = "none";
+    html.style.overflow = "hidden";
+    html.style.height = "100%";
+
+    body.style.overscrollBehaviorY = "none";
+    body.style.overflow = "hidden";
+    body.style.height = "100dvh";
+
+    return () => {
+      html.style.overscrollBehaviorY = prevHtmlOverscroll;
+      html.style.overflow = prevHtmlOverflow;
+      html.style.height = prevHtmlHeight;
+      body.style.overscrollBehaviorY = prevBodyOverscroll;
+      body.style.overflow = prevBodyOverflow;
+      body.style.height = prevBodyHeight;
+    };
+  }, []);
+
   if (error) {
     return (
       <main className="flex h-dvh items-center justify-center p-6 text-center text-sm text-[#e0383f] bg-[#f4f3f0] font-sans">

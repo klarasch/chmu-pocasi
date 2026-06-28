@@ -95,7 +95,10 @@ export function RadarTimeline({
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#ecebe6] via-[#ecebe6]/65 to-transparent"
       />
-      <div className="absolute inset-x-0 bottom-[max(6rem,calc(env(safe-area-inset-bottom)+5.5rem))] px-4 text-[#16161a]">
+      <div
+        className="absolute inset-x-0 px-4 text-[#16161a]"
+        style={{ bottom: "max(6rem, calc(var(--nav-tabs-bottom) + 44px))" }}
+      >
         {/* Horizontal Legend */}
         <div className="mb-3.5 flex items-center justify-between border-b border-[#cfcdc6]/30 pb-2 text-[10px] font-semibold text-[#6b6b70] tracking-wide uppercase">
           <span className="text-[9px] font-bold text-[#6b6b70]/60">

@@ -37,7 +37,10 @@ export function NavTabs() {
     }`;
 
   return (
-    <nav className="fixed inset-x-0 bottom-[44px] z-50 flex justify-center pointer-events-none">
+    <nav
+      className="fixed inset-x-0 z-50 flex justify-center pointer-events-none"
+      style={{ bottom: "var(--nav-tabs-bottom)" }}
+    >
       <div
         className="pointer-events-auto flex gap-[3px] p-[5px] rounded-[40px] bg-[rgba(255,255,255,0.4)] border border-[rgba(255,255,255,0.65)] shadow-[0_10px_30px_-8px_rgba(0,0,0,0.28),inset_0_1px_1px_rgba(255,255,255,0.85),inset_0_-8px_16px_-10px_rgba(120,120,140,0.3)]"
         style={{
