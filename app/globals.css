@@ -141,43 +141,48 @@ body {
   }
 }
 
-@keyframes fpFloatA {
-  0%,
-  100% {
-    transform: translate(0, 0);
+/* Hero sun/moon: the body stays put — motion lives in the shine. Expanding
+   rings ping outward and the halo breathes, identically for sun and moon, so
+   day and night read as the same family instead of unrelated graphics. */
+@keyframes heroRing {
+  0% {
+    transform: scale(0.62);
+    opacity: 0.55;
   }
-  50% {
-    transform: translate(-26px, 30px);
+  80% {
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
   }
 }
-@keyframes fpFloatB {
+@keyframes heroHalo {
   0%,
   100% {
-    transform: translate(0, 0);
+    box-shadow: 0 0 26px 2px var(--hero-glow);
   }
   50% {
-    transform: translate(20px, -18px);
+    box-shadow: 0 0 46px 10px var(--hero-glow);
   }
 }
 
-/* Night moon: drifts on a bold arc so the lagging silver echoes smear into a
-   visible comet-like light trail, and the disc itself pulses a soft halo. */
-@keyframes moonDrift {
-  0%,
-  100% {
-    transform: translate(0, 0);
+/* Hero clouds: drift the full width of the hero, covering the sun/moon
+   rather than recoloring the whole sky, so the temperature stays legible. */
+@keyframes heroCloudA {
+  from {
+    transform: translateX(-180px);
   }
-  50% {
-    transform: translate(-30px, 22px);
+  to {
+    transform: translateX(420px);
   }
 }
-@keyframes moonGlow {
-  0%,
-  100% {
-    box-shadow: 0 0 34px 4px var(--moon-glow);
+@keyframes heroCloudB {
+  from {
+    transform: translateX(420px);
   }
-  50% {
-    box-shadow: 0 0 60px 12px var(--moon-glow);
+  to {
+    transform: translateX(-230px);
   }
 }
 @keyframes fpSpin {
@@ -188,43 +193,38 @@ body {
     transform: rotate(360deg);
   }
 }
-@keyframes fpRain {
+/* Hero precipitation: spans the full hero height so rain/snow read as
+   covering the whole sky, not a small cluster tucked under one cloud. */
+@keyframes heroRain {
   0% {
-    transform: translateY(-4px);
+    transform: translateY(0);
     opacity: 0;
   }
-  25% {
+  15% {
+    opacity: 1;
+  }
+  85% {
     opacity: 1;
   }
   100% {
-    transform: translateY(14px);
+    transform: translateY(206px);
     opacity: 0;
   }
 }
-@keyframes fpSnow {
+@keyframes heroSnow {
   0% {
-    transform: translateY(-4px) rotate(0deg);
+    transform: translate(0, 0);
     opacity: 0;
   }
-  30% {
+  12% {
+    opacity: 1;
+  }
+  88% {
     opacity: 1;
   }
   100% {
-    transform: translateY(14px) rotate(180deg);
+    transform: translate(14px, 200px);
     opacity: 0;
-  }
-}
-@keyframes fpFlash {
-  0%,
-  88%,
-  100% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 0.1;
-  }
-  93% {
-    opacity: 1;
   }
 }
 @keyframes wi-rain {
