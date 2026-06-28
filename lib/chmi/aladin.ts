@@ -416,7 +416,9 @@ export async function getAladinForecast(
   lon: number,
 ): Promise<AladinForecast> {
   const run = await discoverLatestRun();
-  return getAladinForecastForRun(run, lat, lon);
+  const snappedLat = Math.round(lat * 100) / 100;
+  const snappedLon = Math.round(lon * 100) / 100;
+  return getAladinForecastForRun(run, snappedLat, snappedLon);
 }
 
 // `hourly` starts at the model run's first output time (e.g. 00 UTC), which
