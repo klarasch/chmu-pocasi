@@ -97,7 +97,7 @@ export function RadarTimeline({
       />
       <div
         className="absolute inset-x-0 px-4 text-[#16161a]"
-        style={{ bottom: "max(6rem, calc(var(--nav-tabs-bottom) + 44px))" }}
+        style={{ bottom: "max(6rem, calc(var(--nav-tabs-bottom) + 56px))" }}
       >
         {/* Horizontal Legend */}
         <div className="mb-3.5 flex items-center justify-between border-b border-[#cfcdc6]/30 pb-2 text-[10px] font-semibold text-[#6b6b70] tracking-wide uppercase">

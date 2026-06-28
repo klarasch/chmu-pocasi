@@ -26,7 +26,7 @@
 
 @media (display-mode: standalone) {
   :root {
-    --nav-tabs-bottom: calc(54px + env(safe-area-inset-bottom));
+    --nav-tabs-bottom: calc(48px + env(safe-area-inset-bottom));
   }
 }
 
