@@ -66,24 +66,24 @@ export default function ForecastPage() {
 
 function Footer() {
   return (
-    <p className="border-t border-border-subtle pt-3 text-[11px] text-foreground-muted">
-      Zdroj dat:{" "}
+    <p className="border-t border-border-subtle pt-3 text-[11px] text-foreground-muted/70 font-medium">
+      Aplikace:{" "}
+      <a
+        href="https://ksch.cz"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:underline text-foreground"
+      >
+        Klára
+      </a>{" "}
+      · Data:{" "}
       <a
         href="https://www.chmi.cz"
         target="_blank"
         rel="noopener noreferrer"
-        className="underline underline-offset-2"
+        className="hover:underline text-foreground"
       >
-        ČHMÚ
-      </a>
-      , licence{" "}
-      <a
-        href="https://creativecommons.org/licenses/by/4.0/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="underline underline-offset-2"
-      >
-        CC BY 4.0
+        ČHMÚ, CC BY 4.0
       </a>
     </p>
   );

@@ -79,7 +79,7 @@ export function HourlySkeleton() {
 
 export function DailySkeleton() {
   return (
-    <div className="bg-background text-foreground pb-[52px]">
+    <div className="bg-background text-foreground pb-6">
       <div className="text-[9px] tracking-[0.16em] text-foreground-muted font-bold mb-[2px] px-0 border-t border-border-subtle pt-3">
         DALŠÍ DNY
       </div>

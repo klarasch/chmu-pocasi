@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { RadarLegend } from "@/components/radar/RadarLegend";
+
 import { RadarMap } from "@/components/radar/RadarMap";
 import { RadarTimeline } from "@/components/radar/RadarTimeline";
 import { DEFAULT_LOCATION } from "@/lib/chmi/config";
@@ -69,7 +69,7 @@ export default function RadarPage() {
         tileUrl={current.tileUrl}
         location={location}
       />
-      <RadarLegend />
+
       <RadarTimeline
         frames={data.frames}
         index={index}
@@ -84,14 +84,44 @@ export default function RadarPage() {
 
 function RadarAttribution() {
   return (
-    <a
-      href="https://www.chmi.cz"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="absolute inset-x-0 bottom-[max(0.4rem,env(safe-area-inset-bottom))] z-10 text-center text-[9px] text-[#16161a]/40"
-    >
-      Data: ČHMÚ, CC BY 4.0
-    </a>
+    <div className="absolute inset-x-0 bottom-[max(0.4rem,env(safe-area-inset-bottom))] z-10 text-center text-[9px] text-[#16161a]/40 font-medium">
+      Aplikace:{" "}
+      <a
+        href="https://ksch.cz"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:underline text-[#16161a]/60"
+      >
+        Klára
+      </a>{" "}
+      · Data:{" "}
+      <a
+        href="https://www.chmi.cz"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:underline text-[#16161a]/60"
+      >
+        ČHMÚ, CC BY 4.0
+      </a>{" "}
+      · Mapa:{" "}
+      <a
+        href="https://openfreemap.org"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:underline text-[#16161a]/60"
+      >
+        OpenFreeMap
+      </a>{" "}
+      ©{" "}
+      <a
+        href="https://www.openstreetmap.org/copyright"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:underline text-[#16161a]/60"
+      >
+        OpenStreetMap
+      </a>
+    </div>
   );
 }
 

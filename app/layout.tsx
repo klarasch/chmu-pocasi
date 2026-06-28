@@ -44,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="cs">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased pb-28`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <PullToRefresh>{children}</PullToRefresh>
         <NavTabs />

@@ -462,15 +462,19 @@ body {
 .radar-slider {
   -webkit-appearance: none;
   appearance: none;
+  display: block;
+  width: 100%;
   height: 36px;
   margin: 0;
+  padding: 0;
   background: transparent;
+  border: none;
   touch-action: none;
   cursor: pointer;
 }
 
 .radar-slider::-webkit-slider-runnable-track {
-  height: 4px;
+  height: 36px;
   background: transparent;
 }
 
@@ -479,7 +483,7 @@ body {
   appearance: none;
   width: 22px;
   height: 22px;
-  margin-top: -9px;
+  margin-top: 7px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.6);
@@ -526,28 +530,7 @@ body {
     0 0 0 6px rgba(255, 255, 255, 0.12);
 }
 
-/* MapLibre's default attribution control ships with a light background
-   regardless of map style — restyle to match the app's dark theme and keep
-   it clear of the iOS status bar / notch. */
-.maplibregl-ctrl-top-left {
-  top: max(0.5rem, env(safe-area-inset-top));
-  left: 0.5rem;
-}
-
+/* Hide MapLibre's default attribution control since we display consolidated credits in our custom footer */
 .maplibregl-ctrl-attrib {
-  background: rgba(19, 21, 28, 0.75);
-  border-radius: 8px;
-  padding: 1px 6px;
-}
-
-.maplibregl-ctrl-attrib a {
-  color: rgba(255, 255, 255, 0.55);
-}
-
-.maplibregl-ctrl-attrib.maplibregl-compact {
-  background-color: rgba(19, 21, 28, 0.75);
-}
-
-.maplibregl-ctrl-attrib-button {
-  filter: invert(1) grayscale(1) brightness(1.6);
+  display: none;
 }

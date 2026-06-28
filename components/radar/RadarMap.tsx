@@ -34,10 +34,6 @@ export function RadarMap({
       attributionControl: false,
     });
     mapRef.current = map;
-    map.addControl(
-      new maplibregl.AttributionControl({ compact: true }),
-      "top-left",
-    );
 
     map.on("load", () => {
       map.addSource(IMAGE_SOURCE_ID, {
