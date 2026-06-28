@@ -57,8 +57,35 @@ export default function ForecastPage() {
         <Suspense fallback={<DailyPlaceholder />}>
           <Daily aladinPromise={aladinPromise} textPromise={textPromise} />
         </Suspense>
+
+        <Footer />
       </main>
     </div>
+  );
+}
+
+function Footer() {
+  return (
+    <p className="border-t border-border-subtle pt-3 text-[11px] text-foreground-muted">
+      Zdroj dat:{" "}
+      <a
+        href="https://www.chmi.cz"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline underline-offset-2"
+      >
+        ČHMÚ
+      </a>
+      , licence{" "}
+      <a
+        href="https://creativecommons.org/licenses/by/4.0/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline underline-offset-2"
+      >
+        CC BY 4.0
+      </a>
+    </p>
   );
 }
 

@@ -53,13 +53,18 @@ body {
   margin: 0 auto;
   background-color: #f4f3f0;
   color: #16161a;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.06);
-  border-left: 1px solid #cfcdc6;
-  border-right: 1px solid #cfcdc6;
   font-feature-settings: "ss01" 1;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: auto;
   position: relative;
+}
+
+@media (min-width: 451px) {
+  body {
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.06);
+    border-left: 1px solid #cfcdc6;
+    border-right: 1px solid #cfcdc6;
+  }
 }
 
 /* Pull-to-refresh: the cloud bobs gently in place while data reloads,

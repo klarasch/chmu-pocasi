@@ -77,7 +77,21 @@ export default function RadarPage() {
         onIndexChange={setIndex}
         onTogglePlay={() => setPlaying((p) => !p)}
       />
+      <RadarAttribution />
     </main>
+  );
+}
+
+function RadarAttribution() {
+  return (
+    <a
+      href="https://www.chmi.cz"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="absolute inset-x-0 bottom-[max(0.4rem,env(safe-area-inset-bottom))] z-10 text-center text-[9px] text-[#16161a]/40"
+    >
+      Data: ČHMÚ, CC BY 4.0
+    </a>
   );
 }
 
