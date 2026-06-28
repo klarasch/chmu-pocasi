@@ -1,6 +1,4 @@
-import { execFile } from "node:child_process";
-import { randomUUID } from "node:crypto";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { promises as fs } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { unstable_cache } from "next/cache";
@@ -118,46 +116,221 @@ const discoverLatestRun = unstable_cache(
   { revalidate: 30 * 60 },
 );
 
-function runGribLs(
-  filePath: string,
-  lat: number,
-  lon: number,
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    execFile(
-      "grib_ls",
-      [
-        "-l",
-        `${lat},${lon},1`,
-        "-p",
-        "validityDate,validityTime",
-        "-W",
-        "14",
-        filePath,
-      ],
-      { maxBuffer: 32 * 1024 * 1024 },
-      (err, stdout, stderr) => {
-        if (err) reject(new Error(`grib_ls failed: ${stderr || err.message}`));
-        else resolve(stdout);
-      },
-    );
-  });
+function readInt16Grib(buf: Buffer, offset: number): number {
+  const val = buf.readUInt16BE(offset);
+  if (val & 0x8000) {
+    return -(val & 0x7fff);
+  }
+  return val;
 }
 
-function parseGribLsTable(
-  stdout: string,
-): { validityIso: string; value: number }[] {
-  const lines = stdout.split("\n").slice(2); // skip filename + header
-  const rows: { validityIso: string; value: number }[] = [];
-  for (const line of lines) {
-    const m = line.trim().match(/^(\d{8})\s+(\d{1,4})\s+([-\d.]+)/);
-    if (!m) continue;
-    const [, date, time, value] = m;
-    const hhmm = time.padStart(4, "0");
-    const iso = `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}T${hhmm.slice(0, 2)}:${hhmm.slice(2, 4)}:00Z`;
-    rows.push({ validityIso: iso, value: Number(value) });
+function readInt24Grib(buf: Buffer, offset: number): number {
+  const val = (buf[offset] << 16) | (buf[offset + 1] << 8) | buf[offset + 2];
+  if (val & 0x800000) {
+    return -(val & 0x7fffff);
   }
-  return rows;
+  return val;
+}
+
+function readIbmFloat(buf: Buffer, offset: number): number {
+  const sign = buf[offset] & 0x80 ? -1 : 1;
+  const exponent = buf[offset] & 0x7f;
+  const fraction =
+    (buf[offset + 1] << 16) | (buf[offset + 2] << 8) | buf[offset + 3];
+  if (fraction === 0) return 0;
+  return sign * fraction * Math.pow(16, exponent - 64 - 6);
+}
+
+function readBits(
+  buf: Buffer,
+  startByte: number,
+  bitOffset: number,
+  numBits: number,
+): number {
+  const byteOffset = Math.floor(bitOffset / 8);
+  const bitShift = bitOffset % 8;
+
+  let val = 0;
+  if (startByte + byteOffset + 3 < buf.length) {
+    val = buf.readUInt32BE(startByte + byteOffset);
+  } else {
+    const b0 = buf[startByte + byteOffset] ?? 0;
+    const b1 = buf[startByte + byteOffset + 1] ?? 0;
+    const b2 = buf[startByte + byteOffset + 2] ?? 0;
+    const b3 = buf[startByte + byteOffset + 3] ?? 0;
+    val = (b0 << 24) | (b1 << 16) | (b2 << 8) | b3;
+  }
+
+  const shift = 32 - bitShift - numBits;
+  return (val >>> shift) & ((1 << numBits) - 1);
+}
+
+function extractSeries(
+  buf: Buffer,
+  lat: number,
+  lon: number,
+): { validityIso: string; value: number }[] {
+  const series: { validityIso: string; value: number }[] = [];
+  let offset = 0;
+  let gridInfo: { i: number; j: number; bitsPerValue: number } | null = null;
+
+  while (offset < buf.length) {
+    if (buf.toString("ascii", offset, offset + 4) !== "GRIB") {
+      let found = false;
+      for (let idx = offset + 1; idx < buf.length - 4; idx++) {
+        if (buf.toString("ascii", idx, idx + 4) === "GRIB") {
+          offset = idx;
+          found = true;
+          break;
+        }
+      }
+      if (!found) break;
+    }
+
+    const length =
+      (buf[offset + 4] << 16) | (buf[offset + 5] << 8) | buf[offset + 6];
+
+    const pdsOffset = offset + 8;
+    const flags = buf[pdsOffset + 7];
+    const pdsLen =
+      (buf[pdsOffset] << 16) | (buf[pdsOffset + 1] << 8) | buf[pdsOffset + 2];
+
+    const timeUnit = buf[pdsOffset + 17];
+    const p1 = buf[pdsOffset + 18];
+    const p2 = buf[pdsOffset + 19];
+    const timeRangeIndicator = buf[pdsOffset + 20];
+    const decimalScaleFactor = readInt16Grib(buf, pdsOffset + 26);
+
+    const year = buf[pdsOffset + 12];
+    const month = buf[pdsOffset + 13];
+    const day = buf[pdsOffset + 14];
+    const hour = buf[pdsOffset + 15];
+    const minute = buf[pdsOffset + 16];
+    const century = buf[pdsOffset + 24];
+
+    const fullYear = (century - 1) * 100 + year;
+    const refDate = new Date(Date.UTC(fullYear, month - 1, day, hour, minute));
+
+    let stepRange = 0;
+    if (timeRangeIndicator === 10) {
+      stepRange = p2;
+    } else {
+      stepRange = p1;
+    }
+
+    if (timeUnit === 1) {
+      refDate.setUTCHours(refDate.getUTCHours() + stepRange);
+    } else if (timeUnit === 0) {
+      refDate.setUTCMinutes(refDate.getUTCMinutes() + stepRange);
+    } else if (timeUnit === 2) {
+      refDate.setUTCDate(refDate.getUTCDate() + stepRange);
+    }
+
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const validityIso = `${refDate.getUTCFullYear()}-${pad(refDate.getUTCMonth() + 1)}-${pad(refDate.getUTCDate())}T${pad(refDate.getUTCHours())}:${pad(refDate.getUTCMinutes())}:00Z`;
+
+    const gdsOffset = pdsOffset + pdsLen;
+    const gdsLen =
+      flags & 128
+        ? (buf[gdsOffset] << 16) |
+          (buf[gdsOffset + 1] << 8) |
+          buf[gdsOffset + 2]
+        : 0;
+
+    if (!gridInfo) {
+      if (!(flags & 128)) {
+        throw new Error("GDS section missing from GRIB1 message");
+      }
+      const Ni = buf.readUInt16BE(gdsOffset + 6);
+      const Nj = buf.readUInt16BE(gdsOffset + 8);
+      const La1 = readInt24Grib(buf, gdsOffset + 10) / 1000;
+      const Lo1 = readInt24Grib(buf, gdsOffset + 13) / 1000;
+      const Di = buf.readUInt16BE(gdsOffset + 23) / 1000;
+      const Dj = buf.readUInt16BE(gdsOffset + 25) / 1000;
+
+      const i = Math.round((lon - Lo1) / Di);
+      const j = Math.round((lat - La1) / Dj);
+
+      if (i < 0 || i >= Ni || j < 0 || j >= Nj) {
+        throw new Error(
+          `Coordinates (${lat}, ${lon}) map to out-of-grid indices (i=${i}, j=${j}) for grid size ${Ni}x${Nj}`,
+        );
+      }
+
+      gridInfo = {
+        i,
+        j,
+        bitsPerValue: 0, // Will be read from BDS
+      };
+    }
+
+    const bmsOffset = gdsOffset + gdsLen;
+    const bmsLen =
+      flags & 64
+        ? (buf[bmsOffset] << 16) |
+          (buf[bmsOffset + 1] << 8) |
+          buf[bmsOffset + 2]
+        : 0;
+    const bdsOffset = bmsOffset + bmsLen;
+
+    const binaryScaleFactor = readInt16Grib(buf, bdsOffset + 4);
+    const ibmRef = readIbmFloat(buf, bdsOffset + 6);
+    const bitsPerValue = buf[bdsOffset + 10];
+
+    const k = gridInfo.j * buf.readUInt16BE(gdsOffset + 6) + gridInfo.i;
+    const bitOffset = k * bitsPerValue;
+    const X = readBits(buf, bdsOffset + 11, bitOffset, bitsPerValue);
+    const V =
+      (ibmRef + X * Math.pow(2, binaryScaleFactor)) *
+      Math.pow(10, -decimalScaleFactor);
+
+    series.push({ validityIso, value: V });
+
+    offset += length;
+  }
+
+  return series;
+}
+
+// Global in-memory cache to keep decompressed buffers warm across requests in the same container.
+const gribBufferCache: Record<string, Buffer> = {};
+
+async function getDecompressedGrib(
+  runTimestamp: string,
+  hourFolder: string,
+  suffix: string,
+): Promise<Buffer> {
+  const cacheKey = `${runTimestamp}_${suffix}`;
+  if (gribBufferCache[cacheKey]) {
+    return gribBufferCache[cacheKey];
+  }
+
+  // Check local filesystem cache (/tmp) to persist decompressed GRIB1 data across cold starts
+  // during the execution context lifetime. This avoids Next.js 2MB unstable_cache size limits.
+  const cacheFile = path.join(tmpdir(), `aladin-grib-${cacheKey}.grb`);
+  try {
+    const cachedBuf = await fs.readFile(cacheFile);
+    gribBufferCache[cacheKey] = cachedBuf;
+    return cachedBuf;
+  } catch {
+    // Cache miss, download and decompress from CHMI
+    const url = `${ALADIN_DIR(hourFolder)}ALADCZ1K4opendata_${runTimestamp}_${suffix}.grb.bz2`;
+    const res = await fetch(url, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(60_000),
+    });
+    if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
+    const compressed = Buffer.from(await res.arrayBuffer());
+    const decompressed = Bunzip.decode(compressed);
+
+    // Save to local filesystem cache asynchronously
+    fs.writeFile(cacheFile, decompressed).catch((err) => {
+      console.warn("Failed to write GRIB cache file:", err);
+    });
+
+    gribBufferCache[cacheKey] = decompressed;
+    return decompressed;
+  }
 }
 
 async function fetchParamSeries(
@@ -165,23 +338,13 @@ async function fetchParamSeries(
   suffix: string,
   lat: number,
   lon: number,
-  workDir: string,
 ): Promise<{ validityIso: string; value: number }[]> {
-  const url = `${ALADIN_DIR(run.hourFolder)}ALADCZ1K4opendata_${run.timestamp}_${suffix}.grb.bz2`;
-  // Multi-MB GRIB2 file — needs more headroom than the small listing/JSON fetches.
-  const res = await fetch(url, {
-    cache: "no-store",
-    signal: AbortSignal.timeout(60_000),
-  });
-  if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
-  const compressed = Buffer.from(await res.arrayBuffer());
-  const decompressed = Bunzip.decode(compressed);
-
-  const filePath = path.join(workDir, `${suffix}.grb`);
-  await writeFile(filePath, decompressed);
-
-  const stdout = await runGribLs(filePath, lat, lon);
-  return parseGribLsTable(stdout);
+  const decompressed = await getDecompressedGrib(
+    run.timestamp,
+    run.hourFolder,
+    suffix,
+  );
+  return extractSeries(decompressed, lat, lon);
 }
 
 async function getAladinForecastForRunUncached(
@@ -189,65 +352,54 @@ async function getAladinForecastForRunUncached(
   lat: number,
   lon: number,
 ): Promise<AladinForecast> {
-  const workDir = await mkdtemp(path.join(tmpdir(), `aladin-${randomUUID()}-`));
-  try {
-    const seriesByParam = await Promise.all(
-      (Object.entries(PARAMS) as [ParamKey, (typeof PARAMS)[ParamKey]][]).map(
-        async ([key, cfg]) => {
-          const series = await fetchParamSeries(
-            run,
-            cfg.suffix,
-            lat,
-            lon,
-            workDir,
-          );
-          return [key, series, cfg] as const;
-        },
-      ),
-    );
+  const seriesByParam = await Promise.all(
+    (Object.entries(PARAMS) as [ParamKey, (typeof PARAMS)[ParamKey]][]).map(
+      async ([key, cfg]) => {
+        const series = await fetchParamSeries(run, cfg.suffix, lat, lon);
+        return [key, series, cfg] as const;
+      },
+    ),
+  );
 
-    const timeline = new Map<string, Partial<Record<ParamKey, number>>>();
-    for (const [key, series, cfg] of seriesByParam) {
-      let prevCumulative: number | null = null;
-      for (const { validityIso, value } of series) {
-        let v = cfg.transform(value);
-        if (cfg.cumulative) {
-          const cumulativeMm = value;
-          v =
-            prevCumulative === null
-              ? 0
-              : Math.max(0, cumulativeMm - prevCumulative);
-          prevCumulative = cumulativeMm;
-        }
-        const entry = timeline.get(validityIso) ?? {};
-        entry[key] = v;
-        timeline.set(validityIso, entry);
+  const timeline = new Map<string, Partial<Record<ParamKey, number>>>();
+  for (const [key, series, cfg] of seriesByParam) {
+    let prevCumulative: number | null = null;
+    for (const { validityIso, value } of series) {
+      let v = cfg.transform(value);
+      if (cfg.cumulative) {
+        const cumulativeMm = value;
+        v =
+          prevCumulative === null
+            ? 0
+            : Math.max(0, cumulativeMm - prevCumulative);
+        prevCumulative = cumulativeMm;
       }
+      const entry = timeline.get(validityIso) ?? {};
+      entry[key] = v;
+      timeline.set(validityIso, entry);
     }
-
-    const hourly: HourlyPoint[] = [...timeline.entries()]
-      .filter(([, v]) => Object.keys(v).length === Object.keys(PARAMS).length)
-      // biome-ignore-start lint/style/noNonNullAssertion: the filter above guarantees every param key is present
-      .map(([time, v]) => ({
-        time,
-        temperatureC: v.temperatureC!,
-        precipMm: v.precipMm!,
-        windSpeedKmh: v.windSpeedKmh!,
-        windDirDeg: v.windDirDeg!,
-        cloudCoverPct: v.cloudCoverPct!,
-      }))
-      // biome-ignore-end lint/style/noNonNullAssertion: see above
-      .sort((a, b) => a.time.localeCompare(b.time));
-
-    const daily = aggregateDaily(hourly);
-    return {
-      runTimestamp: run.timestamp,
-      hourly,
-      daily,
-    };
-  } finally {
-    await rm(workDir, { recursive: true, force: true });
   }
+
+  const hourly: HourlyPoint[] = [...timeline.entries()]
+    .filter(([, v]) => Object.keys(v).length === Object.keys(PARAMS).length)
+    // biome-ignore-start lint/style/noNonNullAssertion: the filter above guarantees every param key is present
+    .map(([time, v]) => ({
+      time,
+      temperatureC: v.temperatureC!,
+      precipMm: v.precipMm!,
+      windSpeedKmh: v.windSpeedKmh!,
+      windDirDeg: v.windDirDeg!,
+      cloudCoverPct: v.cloudCoverPct!,
+    }))
+    // biome-ignore-end lint/style/noNonNullAssertion: see above
+    .sort((a, b) => a.time.localeCompare(b.time));
+
+  const daily = aggregateDaily(hourly);
+  return {
+    runTimestamp: run.timestamp,
+    hourly,
+    daily,
+  };
 }
 
 // Keyed on the run object, not just lat/lon, so a newly-published model run
