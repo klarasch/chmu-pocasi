@@ -396,6 +396,54 @@ body {
   animation-delay: 300ms;
 }
 
+/* Skeleton loading blocks: a static tinted rect with a soft highlight sweep,
+   so the initial loading state reads as "shape is known, value is coming"
+   rather than a blank box. Lives on top of bg-border-subtle/white-08 so it
+   reads correctly on both the day page background and the dark hero sky. */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+.skeleton {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--border-subtle);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+}
+[data-hero-night="true"] .skeleton {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+[data-hero-night="true"] .skeleton::after {
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 70%
+  );
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
+
 /* Hide scrollbars on horizontally-scrolling strips without losing native scroll/momentum. */
 .scrollbar-none {
   scrollbar-width: none;

@@ -2,6 +2,11 @@ import { Suspense } from "react";
 import { AlertBanner } from "@/components/forecast/AlertBanner";
 import { CurrentConditions } from "@/components/forecast/CurrentConditions";
 import { DailyList } from "@/components/forecast/DailyList";
+import {
+  DailySkeleton,
+  HeroSkeleton,
+  HourlySkeleton,
+} from "@/components/forecast/ForecastSkeleton";
 import { HourlyStrip } from "@/components/forecast/HourlyStrip";
 import { TextForecastCard } from "@/components/forecast/TextForecastCard";
 import {
@@ -15,6 +20,7 @@ import {
   type DailyTextForecast,
   getNationalTextForecast,
 } from "@/lib/chmi/text";
+import { isNightHour } from "@/lib/weather-codes";
 
 export const dynamic = "force-dynamic";
 
@@ -93,12 +99,7 @@ async function Hero({
 }
 
 function HeroPlaceholder() {
-  return (
-    <div className="flex flex-col items-center gap-3 px-4 pb-12 pt-[max(1.5rem,calc(env(safe-area-inset-top)+6px))]">
-      <div className="text-sm font-medium text-white/55">Praha</div>
-      <div className="py-6 text-sm text-white/55">Načítání počasí…</div>
-    </div>
-  );
+  return <HeroSkeleton isNight={isNightHour(new Date().toISOString())} />;
 }
 
 async function Alerts({
@@ -126,11 +127,7 @@ async function Hourly({
 }
 
 function HourlyPlaceholder() {
-  return (
-    <div className="px-4 py-7 text-center text-xs text-white/55">
-      Načítání hodinové předpovědi…
-    </div>
-  );
+  return <HourlySkeleton />;
 }
 
 async function Daily({
@@ -150,11 +147,7 @@ async function Daily({
 }
 
 function DailyPlaceholder() {
-  return (
-    <div className="rounded-2xl border border-border-subtle bg-surface px-4 py-7 text-center text-xs text-white/55">
-      Načítání předpovědi na 7 dní…
-    </div>
-  );
+  return <DailySkeleton />;
 }
 
 async function TextCard({
