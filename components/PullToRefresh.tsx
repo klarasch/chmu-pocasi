@@ -2,7 +2,6 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { WeatherIcon } from "@/components/icons/WeatherIcon";
 
 // iOS standalone/fullscreen PWAs have no browser chrome, so there's no native
 // swipe-to-reload gesture — this re-implements it by hand for the scrollable
@@ -161,33 +160,125 @@ export function PullToRefresh({ children }: { children: React.ReactNode }) {
         aria-hidden
       >
         <div
-          className={refreshing ? "animate-ptr-bob" : undefined}
           style={{
-            transform: `scale(${0.7 + (refreshing ? 1 : progress) * 0.3}) rotate(${refreshing ? 0 : progress * 10 - 5}deg)`,
+            transform: `scale(${0.85 + (refreshing ? 0.15 : progress * 0.15)})`,
             transition: pulling.current
               ? "none"
               : "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
-          <WeatherIcon
-            condition="partly-cloudy"
-            isNight={isNight}
-            size={30}
-            className="text-white drop-shadow-md"
-          />
-        </div>
-        <div className="flex h-2 items-center gap-1">
-          {refreshing &&
-            [0, 1, 2].map((i) => (
-              <span
-                key={i}
-                className="block h-1.5 w-1.5 rounded-full bg-accent animate-ptr-drop"
-                style={{ animationDelay: `${i * 0.15}s` }}
-              />
-            ))}
+          <div
+            className="relative select-none shrink-0 overflow-hidden"
+            style={{
+              width: "36px",
+              height: "36px",
+            }}
+          >
+            <div
+              className="absolute top-0 left-0 origin-top-left"
+              style={{
+                width: "30px",
+                height: "30px",
+                transform: `scale(${36 / 30})`,
+              }}
+            >
+              {/* SUN / MOON */}
+              {!isNight ? (
+                // DAY SUN
+                <div
+                  className={`absolute right-[2px] top-[1px] w-[15px] h-[15px] rounded-full bg-[#f2c12e] ${
+                    refreshing ? "animate-ptr-sun-loading" : ""
+                  }`}
+                  style={{
+                    transform: !refreshing
+                      ? `translate(${(1 - progress) * -7}px, ${(1 - progress) * 8}px) scale(${0.35 + progress * 0.65})`
+                      : undefined,
+                    transition: pulling.current
+                      ? "none"
+                      : "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
+                >
+                  {/* Sun ray pulse rings */}
+                  {refreshing && (
+                    <>
+                      <div
+                        className="absolute inset-0 rounded-full border border-[#f2c12e]/50 animate-ptr-sun-ring"
+                        style={{ animationDelay: "0s" }}
+                      />
+                      <div
+                        className="absolute inset-0 rounded-full border border-[#f2c12e]/30 animate-ptr-sun-ring"
+                        style={{ animationDelay: "0.6s" }}
+                      />
+                    </>
+                  )}
+                </div>
+              ) : (
+                // NIGHT MOON
+                <div
+                  className={`absolute right-[4px] top-[-1px] w-[12px] h-[12px] rounded-full ${
+                    refreshing ? "animate-ptr-moon-loading" : ""
+                  }`}
+                  style={{
+                    boxShadow: "-3px 3px 0 0 var(--icon-moon)",
+                    transform: !refreshing
+                      ? `translate(${(1 - progress) * -5}px, ${(1 - progress) * 6}px) scale(${0.5 + progress * 0.5}) rotate(${(1 - progress) * -30}deg)`
+                      : undefined,
+                    transition: pulling.current
+                      ? "none"
+                      : "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
+                />
+              )}
+
+              {/* CLOUD CONTAINER */}
+              <div
+                className={refreshing ? "animate-ptr-cloud-loading" : ""}
+                style={{
+                  transformOrigin: "bottom center",
+                }}
+              >
+                {/* Cloud Left Circle */}
+                <div
+                  className="absolute left-[2px] bottom-[7px] w-[10px] h-[10px] rounded-full bg-[#c9c6bd] origin-bottom-left"
+                  style={{
+                    transform: !refreshing
+                      ? `translateX(${(1 - progress) * -8}px) scale(${0.2 + progress * 0.8})`
+                      : undefined,
+                    transition: pulling.current
+                      ? "none"
+                      : "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
+                />
+
+                {/* Cloud Right Circle */}
+                <div
+                  className="absolute right-[5px] bottom-[8px] w-[9px] h-[9px] rounded-full bg-[#c9c6bd] origin-bottom-right"
+                  style={{
+                    transform: !refreshing
+                      ? `translateX(${(1 - progress) * 8}px) scale(${0.2 + progress * 0.8})`
+                      : undefined,
+                    transition: pulling.current
+                      ? "none"
+                      : "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
+                />
+
+                {/* Cloud Base Pill */}
+                <div
+                  className="absolute left-[3px] bottom-[5px] w-[24px] h-[11px] rounded-[6px] bg-[#c9c6bd] origin-left"
+                  style={{
+                    transform: !refreshing ? `scaleX(${progress})` : undefined,
+                    transition: pulling.current
+                      ? "none"
+                      : "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
         <div
-          className="text-[11px] font-medium tracking-wide text-white/75"
+          className="text-[11px] font-medium tracking-wide text-foreground-muted"
           style={{
             opacity: pull > 16 ? 1 : 0,
             transition: "opacity 0.15s ease",

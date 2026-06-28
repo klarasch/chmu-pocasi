@@ -67,46 +67,72 @@ body {
   }
 }
 
-/* Pull-to-refresh: the cloud bobs gently in place while data reloads,
-   and three little drops fall out from underneath it in sequence — a
-   weather-themed stand-in for a loading spinner. */
-@keyframes ptr-bob {
+/* Pull-to-refresh: custom Bauhaus weather animations where elements assemble
+   and animate independently for a tactile, creative reloading state. */
+@keyframes ptr-cloud-loading {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) scale(1, 1);
   }
-  50% {
-    transform: translateY(-3px);
+  30% {
+    transform: translateY(-4px) scale(0.96, 1.04);
+  }
+  70% {
+    transform: translateY(1.5px) scale(1.04, 0.96);
   }
 }
-.animate-ptr-bob {
-  animation: ptr-bob 1s ease-in-out infinite;
+.animate-ptr-cloud-loading {
+  animation: ptr-cloud-loading 1.2s ease-in-out infinite;
 }
 
-@keyframes ptr-drop {
+@keyframes ptr-sun-loading {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+.animate-ptr-sun-loading {
+  animation: ptr-sun-loading 1.2s ease-in-out infinite;
+}
+
+@keyframes ptr-sun-ring {
   0% {
-    transform: translateY(-2px) scale(0.6);
-    opacity: 0;
-  }
-  25% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  75% {
-    opacity: 1;
+    transform: scale(1);
+    opacity: 0.8;
   }
   100% {
-    transform: translateY(7px) scale(0.5);
+    transform: scale(2.2);
     opacity: 0;
   }
 }
-.animate-ptr-drop {
-  animation: ptr-drop 1s ease-in infinite;
+.animate-ptr-sun-ring {
+  animation: ptr-sun-ring 1.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes ptr-moon-loading {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+.animate-ptr-moon-loading {
+  animation: ptr-moon-loading 1.6s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-ptr-bob,
-  .animate-ptr-drop {
+  .animate-ptr-cloud-loading,
+  .animate-ptr-sun-loading,
+  .animate-ptr-sun-ring,
+  .animate-ptr-moon-loading {
     animation: none;
   }
 }
