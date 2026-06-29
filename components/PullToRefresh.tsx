@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 // iOS standalone/fullscreen PWAs have no browser chrome, so there's no native
@@ -12,10 +12,14 @@ const PULL_THRESHOLD = 70;
 const MAX_PULL = 110;
 const RESISTANCE = 0.45;
 
-export function PullToRefresh({ children }: { children: React.ReactNode }) {
-  const _pathname = usePathname();
+export function PullToRefresh({
+  children,
+  enabled = true,
+}: {
+  children: React.ReactNode;
+  enabled?: boolean;
+}) {
   const router = useRouter();
-  const enabled = true;
 
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -145,7 +149,7 @@ export function PullToRefresh({ children }: { children: React.ReactNode }) {
       document.removeEventListener("touchend", onTouchEnd);
       document.removeEventListener("touchcancel", onTouchEnd);
     };
-  }, [router]);
+  }, [router, enabled]);
 
   if (!enabled) return <>{children}</>;
 

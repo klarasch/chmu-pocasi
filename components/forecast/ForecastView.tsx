@@ -5,6 +5,7 @@ import { CurrentConditions } from "@/components/forecast/CurrentConditions";
 import { DailyList } from "@/components/forecast/DailyList";
 import { HourlyStrip } from "@/components/forecast/HourlyStrip";
 import { NavTabs } from "@/components/NavTabs";
+import { PullToRefresh } from "@/components/PullToRefresh";
 import { RadarView } from "@/components/radar/RadarView";
 import type { AladinForecast, HourlyPoint } from "@/lib/chmi/aladin";
 import { DEFAULT_LOCATION } from "@/lib/chmi/config";
@@ -359,12 +360,14 @@ function ForecastLayout({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Forecast Page Container */}
-      <div
-        className="flex-col animate-fade-in relative"
-        style={{ display: activeTab === "forecast" ? "flex" : "none" }}
-      >
-        {children}
-      </div>
+      <PullToRefresh enabled={activeTab === "forecast"}>
+        <div
+          className="flex-col animate-fade-in relative"
+          style={{ display: activeTab === "forecast" ? "flex" : "none" }}
+        >
+          {children}
+        </div>
+      </PullToRefresh>
 
       {/* Radar Page Container */}
       <div
