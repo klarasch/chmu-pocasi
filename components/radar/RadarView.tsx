@@ -77,7 +77,7 @@ export function RadarView() {
 
   if (error) {
     return (
-      <main className="flex h-dvh items-center justify-center p-6 text-center text-sm text-[#e0383f] bg-[#f4f3f0] font-sans">
+      <main className="flex h-full w-full items-center justify-center p-6 text-center text-sm text-[#e0383f] bg-[#f4f3f0] font-sans">
         Radar se nepodařilo načíst: {error}
       </main>
     );
@@ -85,7 +85,7 @@ export function RadarView() {
 
   if (!data || data.frames.length === 0) {
     return (
-      <main className="relative h-dvh overflow-hidden bg-[#ecebe6]">
+      <main className="relative h-full w-full overflow-hidden bg-[#ecebe6]">
         <RadarPlaceholder
           city={location.lat === DEFAULT_LOCATION.lat ? "PRAHA" : "LOKACE"}
         />
@@ -96,7 +96,7 @@ export function RadarView() {
   const current = data.frames[Math.min(index, data.frames.length - 1)];
 
   return (
-    <main className="relative h-dvh overflow-hidden bg-[#ecebe6]">
+    <main className="relative h-full w-full overflow-hidden bg-[#ecebe6]">
       <RadarMap
         bbox={data.bbox}
         tileUrl={current.tileUrl}
@@ -125,7 +125,7 @@ function RadarPlaceholder({ city = "PRAHA" }: { city?: string }) {
   }, []);
 
   return (
-    <div className="relative w-full h-dvh overflow-hidden bg-[#ecebe6] font-sans text-[#16161a]">
+    <div className="relative w-full h-full overflow-hidden bg-[#ecebe6] font-sans text-[#16161a]">
       {/* Radar sweep elements */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div

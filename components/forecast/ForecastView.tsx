@@ -372,7 +372,7 @@ function ForecastLayout({ children }: { children: React.ReactNode }) {
       {/* Radar Page Container */}
       <div
         style={{ display: activeTab === "radar" ? "block" : "none" }}
-        className="absolute inset-0 w-full h-full z-0"
+        className="fixed inset-0 z-0"
       >
         <RadarView />
       </div>
