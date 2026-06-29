@@ -13,9 +13,9 @@ const MAX_PULL = 110;
 const RESISTANCE = 0.45;
 
 export function PullToRefresh({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+  const _pathname = usePathname();
   const router = useRouter();
-  const enabled = pathname !== "/radar";
+  const enabled = true;
 
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
@@ -53,6 +53,11 @@ export function PullToRefresh({ children }: { children: React.ReactNode }) {
     }
 
     function onTouchStart(e: TouchEvent) {
+      if (
+        typeof window !== "undefined" &&
+        window.location.pathname === "/radar"
+      )
+        return;
       if (refreshingRef.current) return;
       if ((document.scrollingElement?.scrollTop ?? 0) > 0) return;
       if (startsInHorizontalScroller(e.target)) {
@@ -69,6 +74,11 @@ export function PullToRefresh({ children }: { children: React.ReactNode }) {
     }
 
     function onTouchMove(e: TouchEvent) {
+      if (
+        typeof window !== "undefined" &&
+        window.location.pathname === "/radar"
+      )
+        return;
       if (
         !pulling.current ||
         startY.current === null ||
@@ -135,7 +145,7 @@ export function PullToRefresh({ children }: { children: React.ReactNode }) {
       document.removeEventListener("touchend", onTouchEnd);
       document.removeEventListener("touchcancel", onTouchEnd);
     };
-  }, [enabled, router]);
+  }, [router]);
 
   if (!enabled) return <>{children}</>;
 
