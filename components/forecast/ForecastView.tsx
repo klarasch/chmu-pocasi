@@ -369,10 +369,14 @@ function ForecastLayout({ children }: { children: React.ReactNode }) {
         </div>
       </PullToRefresh>
 
-      {/* Radar Page Container */}
+      {/* Radar Page Container — kept in normal flow (not position:fixed) so it
+          starts at the true physical top of the viewport. In an iOS standalone
+          PWA with black-translucent status bar, fixed elements are inset below
+          the safe area, which exposes the body background as a solid bar under
+          the status bar; a flow element bleeds edge-to-edge instead. */}
       <div
         style={{ display: activeTab === "radar" ? "block" : "none" }}
-        className="fixed inset-0 z-0"
+        className="h-dvh w-full"
       >
         <RadarView />
       </div>
