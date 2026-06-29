@@ -57,11 +57,13 @@ export function ForecastProvider({
   initialLocationLabel,
   initialLat,
   initialLon,
+  aladinPromise,
 }: {
   children: React.ReactNode;
   initialLocationLabel: string;
   initialLat: number;
   initialLon: number;
+  aladinPromise: Promise<AladinForecast | null>;
 }) {
   const [aladin, setAladin] = useState<AladinForecast | null>(null);
   const [locationLabel, setLocationLabel] =
@@ -79,7 +81,10 @@ export function ForecastProvider({
     setLocationLabel(initialLocationLabel);
     setLat(initialLat);
     setLon(initialLon);
-  }, [initialLocationLabel, initialLat, initialLon]);
+    aladinPromise.then((data) => {
+      if (data) setAladin(data);
+    });
+  }, [initialLocationLabel, initialLat, initialLon, aladinPromise]);
 
   // Read initial URL path on mount to activate correct tab
   useEffect(() => {
@@ -300,17 +305,20 @@ export function ForecastView({
   initialLocationLabel,
   initialLat,
   initialLon,
+  aladinPromise,
 }: {
   children: React.ReactNode;
   initialLocationLabel: string;
   initialLat: number;
   initialLon: number;
+  aladinPromise: Promise<AladinForecast | null>;
 }) {
   return (
     <ForecastProvider
       initialLocationLabel={initialLocationLabel}
       initialLat={initialLat}
       initialLon={initialLon}
+      aladinPromise={aladinPromise}
     >
       <ForecastLayout>{children}</ForecastLayout>
     </ForecastProvider>

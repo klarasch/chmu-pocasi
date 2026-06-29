@@ -54,6 +54,7 @@ export default async function ForecastPage() {
       initialLocationLabel={locationLabel}
       initialLat={lat}
       initialLon={lon}
+      aladinPromise={aladinPromise}
     >
       <Suspense fallback={<HeroPlaceholder />}>
         <ForecastHero aladinPromise={aladinPromise} />

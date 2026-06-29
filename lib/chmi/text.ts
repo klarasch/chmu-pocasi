@@ -1,3 +1,6 @@
+import { promises as fs } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { unstable_cache } from "next/cache";
 import { CHMI_BASE } from "./config";
 
@@ -96,6 +99,8 @@ async function fetchDailyForecastWithEntries(
 }
 
 async function getNationalTextForecastUncached(): Promise<DailyTextForecast[]> {
+  const cacheFile = path.join(tmpdir(), "text-forecast-fallback.json");
+
   try {
     const entries = await listTextDirUncached();
     const results = await Promise.all(
@@ -106,11 +111,28 @@ async function getNationalTextForecastUncached(): Promise<DailyTextForecast[]> {
     const filtered = results.filter((r): r is DailyTextForecast => r !== null);
     if (filtered.length > 0) {
       lastSuccessfulTextForecast = filtered;
+
+      // Save to local filesystem cache asynchronously
+      fs.writeFile(cacheFile, JSON.stringify(filtered)).catch((err) => {
+        console.warn("Failed to write text forecast fallback file:", err);
+      });
+
       return filtered;
     }
   } catch (err) {
     console.error("Failed to fetch national text forecast:", err);
   }
+
+  // Fallback: check persistent local disk cache if in-memory state is empty
+  if (lastSuccessfulTextForecast.length === 0) {
+    try {
+      const data = await fs.readFile(cacheFile, "utf-8");
+      lastSuccessfulTextForecast = JSON.parse(data);
+    } catch {
+      // No file cached either
+    }
+  }
+
   return lastSuccessfulTextForecast;
 }
 
