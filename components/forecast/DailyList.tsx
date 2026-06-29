@@ -29,8 +29,10 @@ export function DailyList({
   numericDays: DailyPoint[];
   qualitativeDays: DailyTextForecast[];
 }) {
-  // Let's filter qualitative days that aren't in numeric days, just like the old component did
-  const numericDates = new Set(numericDays.map((d) => d.date));
+  // We show 5 days in the main dashboard index
+  const displayedDays = numericDays.slice(0, 5);
+
+  const displayedDates = new Set(displayedDays.map((d) => d.date));
   const formatter = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Europe/Prague",
     year: "numeric",
@@ -39,7 +41,7 @@ export function DailyList({
   });
   const tail = qualitativeDays.filter((d) => {
     const date = formatter.format(new Date(d.startTime));
-    return !numericDates.has(date);
+    return !displayedDates.has(date);
   });
 
   // Calculate temp bounds for range bar rendering
@@ -48,9 +50,6 @@ export function DailyList({
   const rangeMin = allLows.length > 0 ? Math.min(...allLows) : 0;
   const rangeMax = allHighs.length > 0 ? Math.max(...allHighs) : 30;
   const span = Math.max(1, rangeMax - rangeMin);
-
-  // We show 5 days in the main dashboard index
-  const displayedDays = numericDays.slice(0, 5);
 
   return (
     <div className="bg-background text-foreground pb-6">

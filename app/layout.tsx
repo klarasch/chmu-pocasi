@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { NavTabs } from "@/components/NavTabs";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import "./globals.css";
 
@@ -47,7 +46,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <PullToRefresh>{children}</PullToRefresh>
-        <NavTabs />
       </body>
     </html>
   );

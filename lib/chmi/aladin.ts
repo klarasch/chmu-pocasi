@@ -138,7 +138,7 @@ function readIbmFloat(buf: Buffer, offset: number): number {
   const fraction =
     (buf[offset + 1] << 16) | (buf[offset + 2] << 8) | buf[offset + 3];
   if (fraction === 0) return 0;
-  return sign * fraction * Math.pow(16, exponent - 64 - 6);
+  return sign * fraction * 16 ** (exponent - 64 - 6);
 }
 
 function readBits(
@@ -280,9 +280,7 @@ function extractSeries(
     const k = gridInfo.j * buf.readUInt16BE(gdsOffset + 6) + gridInfo.i;
     const bitOffset = k * bitsPerValue;
     const X = readBits(buf, bdsOffset + 11, bitOffset, bitsPerValue);
-    const V =
-      (ibmRef + X * Math.pow(2, binaryScaleFactor)) *
-      Math.pow(10, -decimalScaleFactor);
+    const V = (ibmRef + X * 2 ** binaryScaleFactor) * 10 ** -decimalScaleFactor;
 
     series.push({ validityIso, value: V });
 

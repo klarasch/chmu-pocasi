@@ -4,6 +4,8 @@ import { createContext, use, useContext, useEffect, useState } from "react";
 import { CurrentConditions } from "@/components/forecast/CurrentConditions";
 import { DailyList } from "@/components/forecast/DailyList";
 import { HourlyStrip } from "@/components/forecast/HourlyStrip";
+import { NavTabs } from "@/components/NavTabs";
+import { RadarView } from "@/components/radar/RadarView";
 import type { AladinForecast, HourlyPoint } from "@/lib/chmi/aladin";
 import { DEFAULT_LOCATION } from "@/lib/chmi/config";
 import type { DailyTextForecast } from "@/lib/chmi/text";
@@ -18,11 +20,13 @@ interface ForecastContextType {
   locationLabel: string;
   loading: boolean;
   boundaryWarning: string | null;
+  activeTab: "forecast" | "radar";
+  setActiveTab: (tab: "forecast" | "radar") => void;
 }
 
 const ForecastContext = createContext<ForecastContextType | null>(null);
 
-function useForecast() {
+export function useForecast() {
   const context = useContext(ForecastContext);
   if (!context) {
     throw new Error("useForecast must be used within a ForecastProvider");
@@ -50,11 +54,45 @@ export function ForecastProvider({
     useState<string>(initialLocationLabel);
   const [loading, setLoading] = useState<boolean>(false);
   const [boundaryWarning, setBoundaryWarning] = useState<string | null>(null);
+  const [activeTab, setActiveTabState] = useState<"forecast" | "radar">(
+    "forecast",
+  );
 
   // Sync initial state if it changes on the server (e.g. page refresh / router refresh)
   useEffect(() => {
     setLocationLabel(initialLocationLabel);
   }, [initialLocationLabel]);
+
+  // Read initial URL path on mount to activate correct tab
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      if (path === "/radar") {
+        setActiveTabState("radar");
+      }
+    }
+  }, []);
+
+  const setActiveTab = (tab: "forecast" | "radar") => {
+    setActiveTabState(tab);
+    if (typeof window !== "undefined") {
+      const path = tab === "radar" ? "/radar" : "/";
+      if (window.location.pathname !== path) {
+        window.history.pushState(null, "", path);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (typeof window !== "undefined") {
+        const path = window.location.pathname;
+        setActiveTabState(path === "/radar" ? "radar" : "forecast");
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   useEffect(() => {
     if (!navigator.geolocation) return;
@@ -164,7 +202,14 @@ export function ForecastProvider({
 
   return (
     <ForecastContext.Provider
-      value={{ aladin, locationLabel, loading, boundaryWarning }}
+      value={{
+        aladin,
+        locationLabel,
+        loading,
+        boundaryWarning,
+        activeTab,
+        setActiveTab,
+      }}
     >
       {children}
     </ForecastContext.Provider>
@@ -186,10 +231,10 @@ export function ForecastView({
 }
 
 function ForecastLayout({ children }: { children: React.ReactNode }) {
-  const { loading, boundaryWarning } = useForecast();
+  const { loading, boundaryWarning, activeTab } = useForecast();
 
   return (
-    <div className="flex flex-col animate-fade-in relative">
+    <div className="flex flex-col relative min-h-dvh">
       {/* Dynamic progress bar during client-side fetch */}
       {loading && (
         <div
@@ -198,7 +243,7 @@ function ForecastLayout({ children }: { children: React.ReactNode }) {
         />
       )}
 
-      {boundaryWarning && (
+      {boundaryWarning && activeTab === "forecast" && (
         <div className="mx-[26px] mt-4 p-3 rounded-xl border border-[#ef4b4b]/20 bg-[#ef4b4b]/5 text-xs text-[#ef4b4b] flex items-center gap-2 animate-fade-up">
           <svg
             className="shrink-0"
@@ -218,7 +263,23 @@ function ForecastLayout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      {children}
+      {/* Forecast Page Container */}
+      <div
+        className="flex-col animate-fade-in relative"
+        style={{ display: activeTab === "forecast" ? "flex" : "none" }}
+      >
+        {children}
+      </div>
+
+      {/* Radar Page Container */}
+      <div
+        style={{ display: activeTab === "radar" ? "block" : "none" }}
+        className="w-full h-dvh relative"
+      >
+        <RadarView />
+      </div>
+
+      <NavTabs />
     </div>
   );
 }

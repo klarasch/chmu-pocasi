@@ -73,8 +73,6 @@ export default async function ForecastPage() {
             textPromise={textPromise}
           />
         </Suspense>
-
-        <Footer />
       </main>
     </ForecastView>
   );
@@ -113,30 +111,5 @@ async function TextCard({
     <div className="animate-fade-up animation-delay-225">
       <TextForecastCard day={textDays[0]} />
     </div>
-  );
-}
-
-function Footer() {
-  return (
-    <p className="border-t border-border-subtle pt-3 text-[11px] text-foreground-muted/70 font-medium">
-      Aplikace:{" "}
-      <a
-        href="https://ksch.cz"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:underline text-foreground"
-      >
-        Klára
-      </a>{" "}
-      · Data:{" "}
-      <a
-        href="https://www.chmi.cz"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:underline text-foreground"
-      >
-        ČHMÚ, CC BY 4.0
-      </a>
-    </p>
   );
 }
