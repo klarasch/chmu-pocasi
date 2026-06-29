@@ -29,7 +29,7 @@ function RadarIcon() {
 function InfoIcon() {
   return (
     <span
-      className="relative w-[16px] h-[16px] shrink-0 flex items-center justify-center font-serif text-[11px] font-bold border border-current rounded-full"
+      className="relative w-[14px] h-[14px] shrink-0 flex items-center justify-center font-serif text-[10px] font-bold border border-current rounded-full"
       aria-hidden="true"
     >
       i
@@ -37,9 +37,31 @@ function InfoIcon() {
   );
 }
 
+function formatRunTimestamp(runTimestamp: string): string {
+  if (runTimestamp.length !== 10) return runTimestamp;
+  const year = parseInt(runTimestamp.substring(0, 4), 10);
+  const month = parseInt(runTimestamp.substring(4, 6), 10) - 1;
+  const day = parseInt(runTimestamp.substring(6, 8), 10);
+  const hour = parseInt(runTimestamp.substring(8, 10), 10);
+
+  const utcDate = new Date(Date.UTC(year, month, day, hour));
+  return new Intl.DateTimeFormat("cs-CZ", {
+    timeZone: "Europe/Prague",
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(utcDate);
+}
+
 export function NavTabs() {
-  const { activeTab, setActiveTab } = useForecast();
+  const { activeTab, setActiveTab, aladin } = useForecast();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const runTimeStr = aladin?.runTimestamp
+    ? formatRunTimestamp(aladin.runTimestamp)
+    : "";
 
   const btnStyle = (active: boolean) =>
     `border-none cursor-pointer font-sans text-[14px] font-semibold tracking-[0.02em] py-[12px] px-[24px] rounded-[32px] flex items-center gap-[8px] transition-all duration-150 active:scale-95 ${
@@ -84,7 +106,7 @@ export function NavTabs() {
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="pointer-events-auto flex items-center justify-center w-[52px] h-[52px] rounded-full border border-[rgba(255,255,255,0.65)] bg-[rgba(255,255,255,0.4)] shadow-[0_10px_30px_-8px_rgba(0,0,0,0.28),inset_0_1px_1px_rgba(255,255,255,0.85),inset_0_-8px_16px_-10px_rgba(120,120,140,0.3)] hover:bg-[rgba(255,255,255,0.55)] active:scale-95 transition-all duration-150 text-[rgba(40,40,44,0.55)] hover:text-[rgba(40,40,44,0.8)] cursor-pointer"
+          className="pointer-events-auto flex items-center justify-center w-[44px] h-[44px] rounded-full border border-[rgba(255,255,255,0.65)] bg-[rgba(255,255,255,0.4)] shadow-[0_10px_30px_-8px_rgba(0,0,0,0.28),inset_0_1px_1px_rgba(255,255,255,0.85),inset_0_-8px_16px_-10px_rgba(120,120,140,0.3)] hover:bg-[rgba(255,255,255,0.55)] active:scale-95 transition-all duration-150 text-[rgba(40,40,44,0.55)] hover:text-[rgba(40,40,44,0.8)] cursor-pointer"
           style={{
             backdropFilter: "blur(20px) saturate(1.8)",
             WebkitBackdropFilter: "blur(20px) saturate(1.8)",
@@ -119,7 +141,14 @@ export function NavTabs() {
               <div className="text-[9px] tracking-[0.16em] text-[#6b6b70] font-bold mb-[2px] uppercase">
                 O Aplikaci
               </div>
-              <h2 className="text-lg font-bold tracking-tight">ČHMÚ Počasí</h2>
+              <h2 className="text-lg font-bold tracking-tight leading-tight">
+                ČHMÚ Počasí
+              </h2>
+              {runTimeStr && (
+                <div className="text-[10px] text-[#6b6b70] font-medium mt-[4px]">
+                  Model ALADIN: aktualizováno {runTimeStr}
+                </div>
+              )}
             </div>
 
             {/* Info contents */}

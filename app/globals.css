@@ -20,8 +20,8 @@
   --hero-ink: var(--foreground);
   --hero-ink-muted: var(--foreground-muted);
 
-  /* Tab bar bottom offset, lowered since credits are moved to the info modal */
-  --nav-tabs-bottom: calc(16px + env(safe-area-inset-bottom));
+  /* Tab bar bottom offset, adjusted slightly lower to balance with horizontal margin */
+  --nav-tabs-bottom: calc(12px + env(safe-area-inset-bottom));
 }
 
 @media (display-mode: standalone) {
