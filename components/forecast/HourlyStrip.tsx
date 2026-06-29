@@ -1,5 +1,6 @@
 "use client";
 
+import { useForecast } from "@/components/forecast/ForecastView";
 import { WeatherIcon } from "@/components/icons/WeatherIcon";
 import { conditionFor, isNightHour } from "@/lib/weather-codes";
 
@@ -12,6 +13,7 @@ type HourlyPoint = {
 };
 
 export function HourlyStrip({ hourly }: { hourly: HourlyPoint[] }) {
+  const { lat, lon } = useForecast();
   return (
     <div className="py-[13px] bg-background text-foreground">
       {/* Scrollable Row */}
@@ -22,7 +24,7 @@ export function HourlyStrip({ hourly }: { hourly: HourlyPoint[] }) {
             h.cloudCoverPct,
             h.temperatureC,
           );
-          const isNight = isNightHour(h.time);
+          const isNight = isNightHour(h.time, lat, lon);
           const timeLabel = new Date(h.time).toLocaleTimeString("cs-CZ", {
             hour: "2-digit",
           });

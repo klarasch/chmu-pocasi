@@ -12,7 +12,9 @@ import { isNightHour } from "@/lib/weather-codes";
 export default function ForecastLoading() {
   return (
     <div className="flex flex-col animate-fade-in">
-      <HeroSkeleton isNight={isNightHour(new Date().toISOString())} />
+      <HeroSkeleton
+        isNight={isNightHour(new Date().toISOString(), 50.0755, 14.4378)}
+      />
       <main className="flex flex-col gap-4 px-[26px] pt-4 pb-32">
         <HourlySkeleton />
         <DailySkeleton />

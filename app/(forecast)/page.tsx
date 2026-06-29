@@ -50,7 +50,11 @@ export default async function ForecastPage() {
   const alertsPromise = getActiveAlerts().catch(() => []);
 
   return (
-    <ForecastView initialLocationLabel={locationLabel}>
+    <ForecastView
+      initialLocationLabel={locationLabel}
+      initialLat={lat}
+      initialLon={lon}
+    >
       <Suspense fallback={<HeroPlaceholder />}>
         <ForecastHero aladinPromise={aladinPromise} />
       </Suspense>
@@ -80,7 +84,15 @@ export default async function ForecastPage() {
 }
 
 function HeroPlaceholder() {
-  return <HeroSkeleton isNight={isNightHour(new Date().toISOString())} />;
+  return (
+    <HeroSkeleton
+      isNight={isNightHour(
+        new Date().toISOString(),
+        DEFAULT_LOCATION.lat,
+        DEFAULT_LOCATION.lon,
+      )}
+    />
+  );
 }
 
 function HourlyPlaceholder() {

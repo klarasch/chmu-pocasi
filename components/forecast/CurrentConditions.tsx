@@ -1,5 +1,6 @@
 "use client";
 
+import { useForecast } from "@/components/forecast/ForecastView";
 import { HeroIllustration } from "@/components/forecast/HeroIllustration";
 import {
   CONDITION_LABEL,
@@ -35,9 +36,10 @@ export function CurrentConditions({
   conditionOverride?: Condition;
   isNightOverride?: boolean;
 }) {
+  const { lat, lon } = useForecast();
   const condition =
     conditionOverride ?? conditionFor(precipMm, cloudCoverPct, temperatureC);
-  const isNight = isNightOverride ?? isNightHour(time);
+  const isNight = isNightOverride ?? isNightHour(time, lat, lon);
 
   // Format the date label for the masthead
   const dateLabel = new Date()

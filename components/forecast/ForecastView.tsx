@@ -22,16 +22,26 @@ interface ForecastContextType {
   boundaryWarning: string | null;
   activeTab: "forecast" | "radar";
   setActiveTab: (tab: "forecast" | "radar") => void;
+  lat: number;
+  lon: number;
 }
 
 const ForecastContext = createContext<ForecastContextType | null>(null);
 
+const DEFAULT_CONTEXT: ForecastContextType = {
+  aladin: null,
+  locationLabel: "Praha",
+  loading: false,
+  boundaryWarning: null,
+  activeTab: "forecast",
+  setActiveTab: () => {},
+  lat: DEFAULT_LOCATION.lat,
+  lon: DEFAULT_LOCATION.lon,
+};
+
 export function useForecast() {
   const context = useContext(ForecastContext);
-  if (!context) {
-    throw new Error("useForecast must be used within a ForecastProvider");
-  }
-  return context;
+  return context || DEFAULT_CONTEXT;
 }
 
 function getCookie(name: string): string | null {
@@ -45,9 +55,13 @@ function getCookie(name: string): string | null {
 export function ForecastProvider({
   children,
   initialLocationLabel,
+  initialLat,
+  initialLon,
 }: {
   children: React.ReactNode;
   initialLocationLabel: string;
+  initialLat: number;
+  initialLon: number;
 }) {
   const [aladin, setAladin] = useState<AladinForecast | null>(null);
   const [locationLabel, setLocationLabel] =
@@ -57,11 +71,15 @@ export function ForecastProvider({
   const [activeTab, setActiveTabState] = useState<"forecast" | "radar">(
     "forecast",
   );
+  const [lat, setLat] = useState<number>(initialLat);
+  const [lon, setLon] = useState<number>(initialLon);
 
   // Sync initial state if it changes on the server (e.g. page refresh / router refresh)
   useEffect(() => {
     setLocationLabel(initialLocationLabel);
-  }, [initialLocationLabel]);
+    setLat(initialLat);
+    setLon(initialLon);
+  }, [initialLocationLabel, initialLat, initialLon]);
 
   // Read initial URL path on mount to activate correct tab
   useEffect(() => {
@@ -97,13 +115,13 @@ export function ForecastProvider({
   useEffect(() => {
     if (!navigator.geolocation) return;
 
-    const updateLocation = async (lat: number, lon: number) => {
+    const updateLocation = async (userLat: number, userLon: number) => {
       setLoading(true);
       setBoundaryWarning(null);
 
       try {
         // 1. Fetch updated Aladin forecast
-        const res = await fetch(`/api/forecast?lat=${lat}&lon=${lon}`);
+        const res = await fetch(`/api/forecast?lat=${userLat}&lon=${userLon}`);
         if (!res.ok) {
           throw new Error("Failed to fetch forecast from ALADIN API");
         }
@@ -113,7 +131,7 @@ export function ForecastProvider({
         let name = "Moje Poloha";
         try {
           const geoRes = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=cs`,
+            `https://nominatim.openstreetmap.org/reverse?lat=${userLat}&lon=${userLon}&format=json&accept-language=cs`,
           );
           if (geoRes.ok) {
             const geoData = await geoRes.json();
@@ -136,10 +154,12 @@ export function ForecastProvider({
         // 3. Save states
         setAladin(newAladin);
         setLocationLabel(name);
+        setLat(userLat);
+        setLon(userLon);
 
         // 4. Update the cookie to cache coordinates and name for 1 year
         // biome-ignore lint/suspicious/noDocumentCookie: direct cookie assignment is used to persist location for server-side render
-        document.cookie = `user-location=${JSON.stringify({ lat, lon, name })}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
+        document.cookie = `user-location=${JSON.stringify({ lat: userLat, lon: userLon, name })}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
       } catch (err) {
         console.error("Failed to load forecast for coordinates:", err);
         setBoundaryWarning(
@@ -155,6 +175,8 @@ export function ForecastProvider({
             const pragueAladin = await pragueRes.json();
             setAladin(pragueAladin);
             setLocationLabel("Praha");
+            setLat(DEFAULT_LOCATION.lat);
+            setLon(DEFAULT_LOCATION.lon);
             // Clear the invalid user location cookie
             // biome-ignore lint/suspicious/noDocumentCookie: direct cookie assignment is used to clear invalid location
             document.cookie = "user-location=; path=/; max-age=0; SameSite=Lax";
@@ -209,6 +231,8 @@ export function ForecastProvider({
         boundaryWarning,
         activeTab,
         setActiveTab,
+        lat,
+        lon,
       }}
     >
       {children}
@@ -219,12 +243,20 @@ export function ForecastProvider({
 export function ForecastView({
   children,
   initialLocationLabel,
+  initialLat,
+  initialLon,
 }: {
   children: React.ReactNode;
   initialLocationLabel: string;
+  initialLat: number;
+  initialLon: number;
 }) {
   return (
-    <ForecastProvider initialLocationLabel={initialLocationLabel}>
+    <ForecastProvider
+      initialLocationLabel={initialLocationLabel}
+      initialLat={initialLat}
+      initialLon={initialLon}
+    >
       <ForecastLayout>{children}</ForecastLayout>
     </ForecastProvider>
   );

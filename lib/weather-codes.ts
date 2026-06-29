@@ -22,12 +22,43 @@ export function conditionFor(
   return "clear";
 }
 
-// ALADIN timestamps are UTC instants and this runs both on the server
-// (container TZ is UTC) and the client, so UTC hours stay consistent
-// between SSR and hydration instead of drifting with local TZ.
-export function isNightHour(time: string): boolean {
-  const h = new Date(time).getUTCHours();
-  return h < 6 || h >= 21;
+// Calculate whether it is night for a given time and coordinate in the Czech Republic
+// using a simplified solar declination formula (accurate to within 10-15 minutes).
+export function isNightHour(
+  time: string,
+  lat = 50.0755,
+  lon = 14.4378,
+): boolean {
+  const date = new Date(time);
+  const hUTC = date.getUTCHours() + date.getUTCMinutes() / 60;
+
+  // Day of the year
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date.getTime() - start.getTime();
+  const oneDay = 1000 * 60 * 60 * 24;
+  const day = Math.floor(diff / oneDay);
+
+  const radian = Math.PI / 180;
+  const decl = 23.45 * Math.sin(radian * ((360 / 365) * (284 + day)));
+
+  const latRad = lat * radian;
+  const declRad = decl * radian;
+  const cosH = -Math.tan(latRad) * Math.tan(declRad);
+
+  let H = 0;
+  if (cosH < -1) {
+    H = 180; // 24 hours of day
+  } else if (cosH > 1) {
+    H = 0; // 24 hours of night
+  } else {
+    H = Math.acos(cosH) / radian;
+  }
+
+  const solarNoonUTC = 12 - lon / 15;
+  const sunriseUTC = solarNoonUTC - H / 15;
+  const sunsetUTC = solarNoonUTC + H / 15;
+
+  return hUTC < sunriseUTC || hUTC > sunsetUTC;
 }
 
 export const CONDITION_ICON: Record<Condition, string> = {

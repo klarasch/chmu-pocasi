@@ -29,8 +29,17 @@ export function DailyList({
   numericDays: DailyPoint[];
   qualitativeDays: DailyTextForecast[];
 }) {
-  // We show 5 days in the main dashboard index
-  const displayedDays = numericDays.slice(0, 5);
+  const todayStr = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Prague",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+
+  // Filter out today's date from the "Další dny" list since it's already shown in the Hero
+  const displayedDays = numericDays
+    .filter((d) => d.date !== todayStr)
+    .slice(0, 5);
 
   const displayedDates = new Set(displayedDays.map((d) => d.date));
   const formatter = new Intl.DateTimeFormat("en-CA", {

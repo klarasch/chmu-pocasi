@@ -29,7 +29,7 @@ function RadarIcon() {
 function InfoIcon() {
   return (
     <span
-      className="relative w-[14px] h-[14px] shrink-0 flex items-center justify-center font-serif text-[10px] font-bold border border-current rounded-full"
+      className="relative w-[18px] h-[18px] shrink-0 flex items-center justify-center font-serif text-[12px] font-bold border border-current rounded-full"
       aria-hidden="true"
     >
       i
@@ -48,15 +48,13 @@ export function NavTabs() {
         : "bg-transparent text-[rgba(40,40,44,0.55)] hover:text-[rgba(40,40,44,0.8)]"
     }`;
 
-  const infoBtnStyle =
-    "border-none cursor-pointer w-[36px] h-[36px] rounded-full flex items-center justify-center transition-all duration-150 active:scale-95 bg-transparent text-[rgba(40,40,44,0.55)] hover:text-[rgba(40,40,44,0.8)] hover:bg-[rgba(255,255,255,0.15)]";
-
   return (
     <>
       <nav
-        className="fixed inset-x-0 z-50 flex justify-center pointer-events-none"
+        className="fixed inset-x-0 z-50 flex justify-center items-center gap-[10px] pointer-events-none"
         style={{ bottom: "var(--nav-tabs-bottom)" }}
       >
+        {/* Main Tab Pill */}
         <div
           className="pointer-events-auto flex items-center gap-[4px] p-[6px] rounded-[40px] bg-[rgba(255,255,255,0.4)] border border-[rgba(255,255,255,0.65)] shadow-[0_10px_30px_-8px_rgba(0,0,0,0.28),inset_0_1px_1px_rgba(255,255,255,0.85),inset_0_-8px_16px_-10px_rgba(120,120,140,0.3)]"
           style={{
@@ -80,16 +78,22 @@ export function NavTabs() {
             <RadarIcon />
             Radar
           </button>
-          <button
-            type="button"
-            onClick={() => setIsModalOpen(true)}
-            className={infoBtnStyle}
-            title="Informace a data"
-            aria-label="Zobrazit informace o aplikaci a zdroje dat"
-          >
-            <InfoIcon />
-          </button>
         </div>
+
+        {/* Separate Circular Info Button */}
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(true)}
+          className="pointer-events-auto flex items-center justify-center w-[60px] h-[60px] rounded-full border border-[rgba(255,255,255,0.65)] bg-[rgba(255,255,255,0.4)] shadow-[0_10px_30px_-8px_rgba(0,0,0,0.28),inset_0_1px_1px_rgba(255,255,255,0.85),inset_0_-8px_16px_-10px_rgba(120,120,140,0.3)] hover:bg-[rgba(255,255,255,0.55)] active:scale-95 transition-all duration-150 text-[rgba(40,40,44,0.55)] hover:text-[rgba(40,40,44,0.8)] cursor-pointer"
+          style={{
+            backdropFilter: "blur(20px) saturate(1.8)",
+            WebkitBackdropFilter: "blur(20px) saturate(1.8)",
+          }}
+          title="Informace a data"
+          aria-label="Zobrazit informace o aplikaci a zdroje dat"
+        >
+          <InfoIcon />
+        </button>
       </nav>
 
       {/* Frosted Glass Attribution Modal */}
