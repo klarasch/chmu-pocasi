@@ -1,9 +1,26 @@
+import { execFileSync } from "node:child_process";
 import { promises as fs } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { unstable_cache } from "next/cache";
 import Bunzip from "seek-bzip";
 import { CHMI_BASE } from "./config";
+
+function decompressBzip2(compressed: Buffer): Buffer {
+  try {
+    return execFileSync("bunzip2", ["-c"], {
+      input: compressed,
+      maxBuffer: 32 * 1024 * 1024,
+      stdio: ["pipe", "pipe", "ignore"],
+    });
+  } catch (err) {
+    console.warn(
+      "Native bunzip2 failed or not available, falling back to seek-bzip:",
+      err,
+    );
+    return Bunzip.decode(compressed);
+  }
+}
 
 const RUN_HOURS = ["00", "06", "12", "18"] as const;
 const ALADIN_DIR = (hour: string) => `${CHMI_BASE}/nwp_aladin/CZ_1km/${hour}/`;
@@ -319,7 +336,7 @@ async function getDecompressedGrib(
     });
     if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
     const compressed = Buffer.from(await res.arrayBuffer());
-    const decompressed = Bunzip.decode(compressed);
+    const decompressed = decompressBzip2(compressed);
 
     // Save to local filesystem cache asynchronously
     fs.writeFile(cacheFile, decompressed).catch((err) => {

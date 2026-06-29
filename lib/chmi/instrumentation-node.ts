@@ -62,6 +62,11 @@ export function registerNode() {
     console.error("Unhandled Rejection:", reason);
   });
 
+  if (process.env.VERCEL) {
+    console.log("Running on Vercel: skipping background cache warming.");
+    return;
+  }
+
   warm().catch((err) => {
     console.error("[warm] initial cache warm failed", err);
   });

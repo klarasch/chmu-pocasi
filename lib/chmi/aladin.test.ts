@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { expect, test, vi } from "vitest";
 
 // Mock unstable_cache to just return the inner function
@@ -9,42 +12,37 @@ import { getAladinForecast } from "./aladin";
 import { DEFAULT_LOCATION } from "./config";
 import { getNationalTextForecast } from "./text";
 
-test("check DailyList tail logic", async () => {
+test("check cold latencies", async () => {
+  // Clear GRIB temp files
+  const tmp = os.tmpdir();
+  try {
+    const files = fs
+      .readdirSync(tmp)
+      .filter((f) => f.startsWith("aladin-grib-"));
+    console.log(`Clearing ${files.length} cached GRIB files...`);
+    for (const f of files) {
+      fs.unlinkSync(path.join(tmp, f));
+    }
+  } catch (err) {
+    console.warn("Failed to clear GRIB files:", err);
+  }
+
+  console.log("1. Starting getNationalTextForecast (Cold)...");
+  const t0 = Date.now();
+  const text = await getNationalTextForecast();
+  console.log(
+    `getNationalTextForecast took ${((Date.now() - t0) / 1000).toFixed(2)}s, count: ${text.length}`,
+  );
+
+  console.log("2. Starting getAladinForecast (Cold)...");
+  const t1 = Date.now();
   const aladin = await getAladinForecast(
     DEFAULT_LOCATION.lat,
     DEFAULT_LOCATION.lon,
   );
-  const textDays = await getNationalTextForecast();
+  console.log(
+    `getAladinForecast took ${((Date.now() - t1) / 1000).toFixed(2)}s, run: ${aladin.runTimestamp}`,
+  );
 
-  const numericDays = aladin.daily;
-  const qualitativeDays = textDays;
-
-  const numericDates = new Set(numericDays.map((d) => d.date));
-  const formatter = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Prague",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-
-  const tail = qualitativeDays.filter((d) => {
-    const date = formatter.format(new Date(d.startTime));
-    return !numericDates.has(date);
-  });
-
-  console.log("NUMERIC DATES:", Array.from(numericDates));
-  console.log("ALL TEXT DAYS:");
-  for (const d of qualitativeDays) {
-    console.log(
-      `- offset ${d.dayOffset}: ${d.headline} (${d.startTime} -> ${formatter.format(new Date(d.startTime))})`,
-    );
-  }
-  console.log("TAIL DAYS:");
-  for (const d of tail) {
-    console.log(
-      `- ${d.headline} (${d.startTime} -> ${formatter.format(new Date(d.startTime))})`,
-    );
-  }
-
-  expect(tail.length).toBeGreaterThanOrEqual(0);
-});
+  expect(text.length).toBeGreaterThanOrEqual(0);
+}, 60000);

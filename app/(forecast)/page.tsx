@@ -23,6 +23,7 @@ import {
 import { isNightHour } from "@/lib/weather-codes";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export default async function ForecastPage() {
   const cookieStore = await cookies();
