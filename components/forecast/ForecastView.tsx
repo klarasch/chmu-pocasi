@@ -91,6 +91,61 @@ export function ForecastProvider({
     }
   }, []);
 
+  // Check for app updates when PWA is resumed/focused
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    let initialVersion: string | null = null;
+
+    const checkUpdate = async () => {
+      try {
+        const res = await fetch("/api/version");
+        if (res.ok) {
+          const data = await res.json();
+          const serverVersion = data.version;
+
+          if (!initialVersion) {
+            initialVersion = serverVersion;
+          } else if (
+            initialVersion !== "development" &&
+            serverVersion !== "development" &&
+            initialVersion !== serverVersion
+          ) {
+            console.log("New version detected, reloading...", {
+              initialVersion,
+              serverVersion,
+            });
+            window.location.reload();
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to check app version:", err);
+      }
+    };
+
+    // Run check on mount
+    checkUpdate();
+
+    // Run check when tab becomes visible or focused
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkUpdate();
+      }
+    };
+
+    const handleFocus = () => {
+      checkUpdate();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
+
   const setActiveTab = (tab: "forecast" | "radar") => {
     setActiveTabState(tab);
     if (typeof window !== "undefined") {

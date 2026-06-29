@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useForecast } from "@/components/forecast/ForecastView";
 import { RadarMap } from "@/components/radar/RadarMap";
 import { RadarTimeline } from "@/components/radar/RadarTimeline";
 import { DEFAULT_LOCATION } from "@/lib/chmi/config";
@@ -11,6 +12,7 @@ import {
 } from "@/lib/radar-frames-client";
 
 export function RadarView() {
+  const { activeTab } = useForecast();
   const [data, setData] = useState<RadarFramesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
@@ -43,6 +45,8 @@ export function RadarView() {
 
   // Prevent vertical scrolling/bounce of the root elements on the radar page
   useEffect(() => {
+    if (activeTab !== "radar") return;
+
     const html = document.documentElement;
     const body = document.body;
 
@@ -69,7 +73,7 @@ export function RadarView() {
       body.style.overflow = prevBodyOverflow;
       body.style.height = prevBodyHeight;
     };
-  }, []);
+  }, [activeTab]);
 
   if (error) {
     return (

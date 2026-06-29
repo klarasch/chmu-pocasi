@@ -50,7 +50,8 @@ export function DailyList({
   });
   const tail = qualitativeDays.filter((d) => {
     const date = formatter.format(new Date(d.startTime));
-    return !displayedDates.has(date);
+    // Only include future days that are not already shown in the daily numeric list
+    return date > todayStr && !displayedDates.has(date);
   });
 
   // Calculate temp bounds for range bar rendering
